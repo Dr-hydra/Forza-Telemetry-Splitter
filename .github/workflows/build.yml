@@ -28,15 +28,25 @@ jobs:
       - name: Publish single-file exe
         run: dotnet publish src/ForzaTelemetrySplitter -c Release -r win-x64 -o publish
 
-      - name: Upload artifact
+      - name: Build installer (Inno Setup)
+        run: |
+          choco install innosetup --no-progress -y
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
+        shell: pwsh
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ForzaTelemetrySplitter
-          path: publish/ForzaTelemetrySplitter.exe
+          path: |
+            publish/ForzaTelemetrySplitter.exe
+            publish/ForzaTelemetrySplitterSetup.exe
 
-      # On a version tag, attach the exe to a GitHub Release.
+      # On a version tag, attach both the portable exe and the installer to a GitHub Release.
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: publish/ForzaTelemetrySplitter.exe
+          files: |
+            publish/ForzaTelemetrySplitter.exe
+            publish/ForzaTelemetrySplitterSetup.exe

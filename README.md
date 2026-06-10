@@ -20,37 +20,61 @@ overhead, no data altered.
 
 - 🔀 **Lossless fan-out** — splits FH6 "Car Dash" (324-byte) telemetry to any number of destinations, packets untouched.
 - 🟢 **Top-right status overlay** — a tiny pill that shows **Connected / No data** at a glance while you drive. Toggle from the tray.
-- 🧩 **Tool presets** — add destinations from a dropdown of known telemetry tools (VirtualTCU, co-driver, ai-tuner, fh6-tel, Tune It Yourself) or a custom IP:port.
+- 🧩 **Tool presets** — add destinations from a dropdown of known telemetry tools (VirtualTCU, ForzaDash, SimHub, SIM Dashboard, co-driver…) or a custom IP:port.
 - 🖥️ **Lives in the system tray** — runs quietly in the background like VirtualTCU.
 - 🔒 **No Administrator required** — only does localhost UDP, so no UAC prompt.
-- 📦 **Single `.exe`, nothing to install** — self-contained; no .NET runtime needed.
+- 📦 **One small installer** (or a portable `.exe`) — self-contained; no .NET runtime to install.
 
 ---
 
-## Quick start
+## Install
 
-1. **Download** `ForzaTelemetrySplitter.exe` from the [Releases](../../releases) page and run it.
-   - First launch shows a Windows SmartScreen warning (the app isn't code-signed yet).
-     Click **More info → Run anyway**. *(Code signing is planned — see Roadmap.)*
-2. The app starts in your **system tray** and begins splitting automatically.
-3. **Point Forza at the splitter.** In FH6:
-   `Settings → HUD and Gameplay → Data Out`
-   - **Data Out:** ON
-   - **IP Address:** `127.0.0.1`
-   - **Port:** `44405`  ← the splitter's own port
-   - **Packet Format:** Car Dash
-4. **Leave your existing tools exactly as they are.** The splitter forwards to each tool's
-   normal default port — you don't reconfigure anything:
-   - **VirtualTCU** keeps its usual `5555` (it's enabled as a destination by default).
-   - To add another tool: open the splitter (double-click the tray icon) → **Add** → pick it from
-     the preset list (its default port is filled in) → done.
-5. Drive. The overlay turns **green** and every tool receives the stream simultaneously.
+**Recommended — the installer:**
 
-> **Why a dedicated port?** Older guides told you to move VirtualTCU off 5555 so a splitter could
-> steal it — which breaks the moment VirtualTCU launches first. Instead, this splitter listens on
-> its **own** port (`44405`, used by no known Forza tool and outside Forza's reserved 5200–5300
-> range) and forwards *to* your tools on the ports they already use. Nothing to reconfigure, no
-> port fights.
+1. Download **`ForzaTelemetrySplitterSetup.exe`** from the [Releases](../../releases) page.
+2. *(Recommended)* Right-click it → **Properties** → tick **Unblock** (bottom of the General tab) → **OK**.
+   This avoids the blue "Windows protected your PC" screen (see [SmartScreen](#about-the-windows-smartscreen-warning) below).
+3. Run it. The installer is **per-user — no Administrator prompt**. It offers a desktop shortcut and an
+   optional **"Start automatically when Windows starts"** checkbox.
+4. It launches into your **system tray** when finished.
+
+**Prefer no install?** Download the portable **`ForzaTelemetrySplitter.exe`** instead and just run it —
+it's the same app, you just manage the file and shortcuts yourself.
+
+> **Can't find the tray icon?** Windows hides new tray icons by default. Click the small **`^`
+> chevron** at the bottom-right of the taskbar — it'll be in there. Drag it onto the taskbar to keep
+> it visible.
+
+---
+
+## First-time setup (do this once)
+
+The app starts splitting automatically; you just have to point Forza at it.
+
+**1. Open the app** (double-click the tray icon). You'll see it's listening on port **`44405`** and
+already set to forward to **VirtualTCU** on its normal `5555`.
+
+**2. Point Forza at the splitter.** In FH6:
+`Settings → HUD and Gameplay → Data Out`
+- **Data Out:** ON
+- **IP Address:** `127.0.0.1`
+- **Port:** **`44405`**  ← the splitter's own port
+- **Packet Format:** Car Dash
+
+**3. Leave your existing tools as they are.** The splitter forwards to each tool on the port it
+already uses — **don't reconfigure them**:
+- **VirtualTCU** stays on `5555` (already enabled as a destination).
+- **Add another tool:** in the app, click **Add** → pick it from the preset list (its default port is
+  filled in for you) → **OK**. Or choose **Custom…** for anything else.
+
+**4. Drive.** When telemetry is flowing, the **top-right pill turns green ("Connected")** and every
+enabled tool receives the stream at the same time. 🎉
+
+> **Why a dedicated port (44405)?** Older guides told you to move VirtualTCU off `5555` so a splitter
+> could steal it — which breaks the moment VirtualTCU launches first and grabs `5555`. Instead, this
+> splitter listens on its **own** port (`44405` — used by no known Forza tool and outside Forza's
+> reserved `5200–5300` range) and forwards *to* your tools on the ports they already use. Nothing to
+> reconfigure, no port fights.
 
 ### Default port map
 
@@ -60,7 +84,36 @@ overhead, no data altered.
 | → VirtualTCU (its normal port, unchanged) | 127.0.0.1 | 5555 |
 | → Your tuner (example, disabled by default) | 127.0.0.1 | 9999 |
 
-You can change any of these in the app.
+You can change any of these in the app. If you ever see a **"port already in use"** message, another
+app is on the splitter's listen port — just change the splitter's port in the app and set Forza's Data
+Out port to match.
+
+---
+
+## About the Windows SmartScreen warning
+
+This app is open source and safe, but it's **new and not yet code-signed**, so Windows doesn't
+recognize it yet and may show **"Windows protected your PC."** This is normal for new indie apps —
+trust builds as more people download it. To run it:
+
+- **Best:** right-click the downloaded file → **Properties** → tick **Unblock** → **OK**, *then* run it.
+- **Or:** on the blue screen, click **More info** → **Run anyway**.
+- **Verify integrity (optional):** compare `Get-FileHash .\ForzaTelemetrySplitterSetup.exe` to the
+  SHA-256 in the release notes.
+
+*(Code signing is on the roadmap — it removes the "unknown publisher" line; full SmartScreen trust
+then builds with downloads.)*
+
+---
+
+## Updating
+
+There's **no background auto-update** (this is a small, stable tool). To update:
+
+1. **Tray menu → "Check for updates…"** opens the [Releases](../../releases) page.
+2. If there's a newer version, download the new **`ForzaTelemetrySplitterSetup.exe`** and run it.
+3. It **upgrades in place** — same folder, same settings, no duplicate install. (It replaces the old
+   version automatically; your destinations and preferences in `%APPDATA%` are preserved.)
 
 ---
 
@@ -108,8 +161,15 @@ Requires the [.NET SDK](https://dotnet.microsoft.com/download) (10.0+).
 # Run locally
 dotnet run --project src/ForzaTelemetrySplitter
 
-# Produce the single self-contained .exe
+# Produce the single self-contained .exe (lands in publish/)
 dotnet publish src/ForzaTelemetrySplitter -c Release -r win-x64 -o publish
+```
+
+Build the installer (requires [Inno Setup 6](https://jrsoftware.org/isdl.php)):
+
+```sh
+# After publishing, compile publish/ForzaTelemetrySplitterSetup.exe
+"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
 ```
 
 ### Verify the engine (no game needed)
@@ -132,15 +192,20 @@ src/ForzaTelemetrySplitter/
   UI/      MainForm, DestinationDialog, OverlayForm, TrayContext
 tests/EngineTest/   headless verification of the engine
 tools/loopback-test.ps1   manual end-to-end test against a running app
+installer/ForzaTelemetrySplitter.iss   Inno Setup script (builds the installer)
 ```
 
 ---
 
 ## Roadmap (v0.2+)
 
-Auto-start with Windows · auto-update · CSV logging · conditional forwarding (only when racing) ·
-forwarding to phones/tablets on the LAN · FH5 / Forza Motorsport packet auto-detect (232/311/324) ·
-live gear/RPM/speed mini-readout · global hotkey for the overlay · code signing.
+CSV logging · conditional forwarding (only when racing) · forwarding to phones/tablets on the LAN ·
+FH5 / Forza Motorsport packet auto-detect (232/311/324) · live gear/RPM/speed mini-readout · global
+hotkey for the overlay · code signing (free OSS signing via SignPath, or Azure Artifact Signing) ·
+optional winget / Microsoft Store listing.
+
+*(The installer already covers "start with Windows" as an opt-in. Auto-update was intentionally left
+out — it's a small, stable utility; use **Check for updates** instead.)*
 
 ## License
 

@@ -30,6 +30,7 @@ public sealed class TrayContext : ApplicationContext
         menu.Items.Add(_startStopItem);
         menu.Items.Add(_showOverlayItem);
         menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add(new ToolStripMenuItem("Check for updates…", null, OnCheckForUpdates));
         menu.Items.Add(new ToolStripMenuItem("Exit", null, OnExit));
 
         _tray = new NotifyIcon
@@ -79,6 +80,29 @@ public sealed class TrayContext : ApplicationContext
     }
 
     private void OnToggleSplitting(object? sender, EventArgs e) => _mainForm.ToggleRunning();
+
+    /// <summary>
+    /// Lightweight manual-update path: open the GitHub Releases page in the default browser.
+    /// (No background auto-update — this is a small, stable utility; users grab new builds when
+    /// they want them.)
+    /// </summary>
+    private void OnCheckForUpdates(object? sender, EventArgs e)
+    {
+        const string releasesUrl = "https://github.com/jakemismas/Forza-Telemetry-Splitter/releases";
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = releasesUrl,
+                UseShellExecute = true,
+            });
+        }
+        catch
+        {
+            MessageBox.Show($"Latest releases:\n{releasesUrl}", "Forza Telemetry Splitter",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
 
     private void RefreshRunState()
     {
