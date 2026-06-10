@@ -28,9 +28,15 @@ public readonly record struct EngineStatus(
 public sealed class SplitterEngine
 {
     private readonly object _gate = new();
-    private Socket? _socket;
+    private Socket? _socket;       // receive socket (bound to the listen port)
+    private Socket? _sendSocket;   // separate socket for forwarding — see Start() for why
     private Thread? _rxThread;
     private volatile bool _running;
+
+    // Windows IOCTL to stop a UDP socket from surfacing ICMP "port unreachable" as a
+    // connection-reset exception. Without this, forwarding to a local port that nothing is
+    // listening on can poison the socket and break the relay.
+    private const int SIO_UDP_CONNRESET = unchecked((int)0x9800000C);
 
     private List<Destination> _destinations = new();
 
@@ -77,9 +83,26 @@ public sealed class SplitterEngine
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 // Larger receive buffer so a brief UI hiccup never drops Forza packets.
                 socket.ReceiveBufferSize = 1 << 20; // 1 MB
+
+                // Stop a dead forwarding target from poisoning this socket. When we forward to a
+                // local port with nothing listening, Windows returns an ICMP "port unreachable"
+                // that, by default, makes the NEXT receive throw ConnectionReset (WSAECONNRESET).
+                // SIO_UDP_CONNRESET disables that so the receive loop is never disrupted by a tool
+                // that simply isn't running yet. (Best-effort: ignored on platforms without it.)
+                try { socket.IOControl(SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null); }
+                catch { /* not supported here; the separate send socket below still isolates us */ }
+
                 socket.Bind(new IPEndPoint(bindAddr, listenPort));
 
+                // Forward on a SEPARATE socket so a failing/“unreachable” send can never affect the
+                // socket we receive on, nor deliveries to other destinations.
+                var sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                sendSocket.SendBufferSize = 1 << 20;
+                try { sendSocket.IOControl(SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null); }
+                catch { /* best-effort */ }
+
                 _socket = socket;
+                _sendSocket = sendSocket;
                 _running = true;
                 _windowStartTicks = Stopwatch.GetTimestamp();
 
@@ -122,18 +145,22 @@ public sealed class SplitterEngine
     {
         Thread? rx;
         Socket? sock;
+        Socket? send;
         lock (_gate)
         {
             if (!_running) return;
             _running = false;
             sock = _socket;
             _socket = null;
+            send = _sendSocket;
+            _sendSocket = null;
             rx = _rxThread;
             _rxThread = null;
         }
 
         // Closing the socket unblocks the blocking Receive() in the loop.
         try { sock?.Close(); } catch { /* ignore */ }
+        try { send?.Close(); } catch { /* ignore */ }
         try { rx?.Join(500); } catch { /* ignore */ }
 
         _packetsPerSecond = 0;
@@ -144,7 +171,8 @@ public sealed class SplitterEngine
     {
         var buffer = new byte[2048]; // comfortably larger than the 324-byte Car Dash packet
         var socket = _socket;
-        if (socket is null) return;
+        var sendSocket = _sendSocket;
+        if (socket is null || sendSocket is null) return;
 
         while (_running)
         {
@@ -181,13 +209,15 @@ public sealed class SplitterEngine
                 if (ep is null) continue;
                 try
                 {
-                    socket.SendTo(buffer, 0, received, SocketFlags.None, ep);
+                    sendSocket.SendTo(buffer, 0, received, SocketFlags.None, ep);
                     Interlocked.Increment(ref d.ForwardedCount);
                 }
                 catch (SocketException)
                 {
                     // A downstream tool that isn't listening yet just yields a transient error
                     // on localhost. Ignore — it will start receiving once it binds its port.
+                    // Forwarding happens on a dedicated send socket, so this never affects the
+                    // receive socket or deliveries to other destinations.
                 }
             }
 
