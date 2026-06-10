@@ -1,0 +1,21 @@
+# .NET build output
+bin/
+obj/
+publish/
+*.user
+
+# Rider / VS
+.vs/
+.idea/
+
+# Logs / OS
+*.log
+Thumbs.db
+.DS_Store
+
+# Local working backups (per Jake's safe-access rule)
+*.bak
+.claude-working/
+
+# Local Claude Code / editor config (not part of the project)
+.claude/
