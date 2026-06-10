@@ -25,6 +25,12 @@ public sealed class AppConfig
     /// <summary>Start splitting automatically when the app launches.</summary>
     public bool AutoStartSplitting { get; set; } = true;
 
+    /// <summary>
+    /// True once the user has seen the first-run welcome window. Defaults false so the welcome
+    /// (which walks through Forza's Data Out settings) shows on the very first launch only.
+    /// </summary>
+    public bool FirstRunComplete { get; set; }
+
     public List<Destination> Destinations { get; set; } = new();
 
     /// <summary>

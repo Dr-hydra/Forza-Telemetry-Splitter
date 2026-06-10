@@ -20,5 +20,5 @@ Windows attaches a "downloaded from the internet" mark to files from a browser. 
 file against its reputation database; a brand-new, unsigned file has no reputation yet, so it warns.
 Unblocking removes the mark, which is why the warning then disappears.
 
-Code signing is planned, which will remove the "unknown publisher" line immediately. Full SmartScreen
-trust still builds with download volume even after signing.
+[Code signing](CODE-SIGNING.md) is planned, which will remove the "unknown publisher" line
+immediately. Full SmartScreen trust still builds with download volume even after signing.

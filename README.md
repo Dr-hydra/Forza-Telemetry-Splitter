@@ -111,6 +111,7 @@ on/off). Deleting it resets the app to defaults on next launch.
 
 - [Building from source](docs/BUILDING.md)
 - [Windows SmartScreen warning](docs/SMARTSCREEN.md)
+- [Code signing](docs/CODE-SIGNING.md)
 - [Reporting a bug](docs/REPORTING-BUGS.md)
 - [Contributing](CONTRIBUTING.md)
 - [License (MIT)](LICENSE)

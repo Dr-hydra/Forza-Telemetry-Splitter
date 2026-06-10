@@ -30,6 +30,15 @@ internal static class Program
         var mainForm = new MainForm(config, engine, overlay);
         var tray = new TrayContext(config, mainForm, overlay);
 
+        // On the very first launch, walk the user through pointing Forza at the splitter.
+        if (!config.FirstRunComplete)
+        {
+            using var welcome = new WelcomeForm(config);
+            welcome.ShowDialog();
+            config.FirstRunComplete = welcome.DontShowAgain;
+            ConfigStore.Save(config);
+        }
+
         // Start splitting immediately if configured to (default), so it works the moment Forza sends.
         if (config.AutoStartSplitting)
             mainForm.ToggleRunning();

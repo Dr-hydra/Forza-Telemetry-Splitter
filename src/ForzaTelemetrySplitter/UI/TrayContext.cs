@@ -30,6 +30,7 @@ public sealed class TrayContext : ApplicationContext
         menu.Items.Add(_startStopItem);
         menu.Items.Add(_showOverlayItem);
         menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add(new ToolStripMenuItem("Setup guide…", null, OnSetupGuide));
         menu.Items.Add(new ToolStripMenuItem("Check for updates…", null, OnCheckForUpdates));
         menu.Items.Add(new ToolStripMenuItem("Exit", null, OnExit));
 
@@ -80,6 +81,19 @@ public sealed class TrayContext : ApplicationContext
     }
 
     private void OnToggleSplitting(object? sender, EventArgs e) => _mainForm.ToggleRunning();
+
+    /// <summary>Reopen the first-run welcome / setup guide on demand.</summary>
+    private void OnSetupGuide(object? sender, EventArgs e)
+    {
+        using var welcome = new WelcomeForm(_config);
+        welcome.ShowDialog();
+        // If they tick "don't show again" here, respect it; never un-set the flag from this entry.
+        if (welcome.DontShowAgain && !_config.FirstRunComplete)
+        {
+            _config.FirstRunComplete = true;
+            ConfigStore.Save(_config);
+        }
+    }
 
     /// <summary>
     /// Lightweight manual-update path: open the GitHub Releases page in the default browser.

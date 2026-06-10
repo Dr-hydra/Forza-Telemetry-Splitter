@@ -40,7 +40,15 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 UninstallDisplayIcon={app}\{#MyAppExeName}
-; If/when the exe is code-signed, the installer can be signed too (see README roadmap).
+
+; Code signing (optional, gated). Only signs when the build passes /DSign — e.g.
+;   ISCC.exe /DSign /Ssigntool="<path-to-signtool> sign /fd sha256 ... $f" installer\ForzaTelemetrySplitter.iss
+; Without /DSign (local/dev builds), no SignTool is referenced and compilation proceeds unsigned.
+; CI sets this only when a signing secret is present. See docs/CODE-SIGNING.md.
+#ifdef Sign
+SignTool=signtool
+SignedUninstaller=yes
+#endif
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
