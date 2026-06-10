@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Threading;
 using ForzaTelemetrySplitter.Config;
 using ForzaTelemetrySplitter.Core;
@@ -25,6 +26,11 @@ internal static class Program
         ApplicationConfiguration.Initialize();
 
         var config = ConfigStore.Load();
+
+        // Apply the UI language BEFORE any form is built so every control picks up the right strings.
+        // Auto follows the Windows display language; unsupported languages fall back to English.
+        ApplyCulture(config.Language);
+
         var engine = new SplitterEngine();
         var overlay = new OverlayForm();
         var mainForm = new MainForm(config, engine, overlay);
@@ -47,5 +53,13 @@ internal static class Program
         Application.Run(tray);
 
         _singleInstance.ReleaseMutex();
+    }
+
+    /// <summary>Set the process UI culture (and default for new threads) from the language setting.</summary>
+    internal static void ApplyCulture(AppLanguage language)
+    {
+        var culture = language.ToCulture();
+        Thread.CurrentThread.CurrentUICulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
     }
 }

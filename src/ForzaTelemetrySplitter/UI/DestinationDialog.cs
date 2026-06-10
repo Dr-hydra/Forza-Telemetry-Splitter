@@ -1,6 +1,7 @@
 using System.Net;
 using ForzaTelemetrySplitter.Config;
 using ForzaTelemetrySplitter.Core;
+using ForzaTelemetrySplitter.Resources;
 
 namespace ForzaTelemetrySplitter.UI;
 
@@ -22,7 +23,7 @@ public sealed class DestinationDialog : Form
 
     public DestinationDialog(Destination? existing = null)
     {
-        Text = existing is null ? "Add destination" : "Edit destination";
+        Text = existing is null ? Strings.Dest_AddTitle : Strings.Dest_EditTitle;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
         MaximizeBox = false;
@@ -32,7 +33,7 @@ public sealed class DestinationDialog : Form
 
         int labelX = 14, fieldX = 110, fieldW = 250, y = 16, rowH = 34;
 
-        AddLabel("Preset:", labelX, y);
+        AddLabel(Strings.Dest_Preset, labelX, y);
         _preset.DropDownStyle = ComboBoxStyle.DropDownList;
         _preset.SetBounds(fieldX, y - 3, fieldW, 24);
         foreach (var p in TunerPresets.All) _preset.Items.Add(p.Name);
@@ -40,24 +41,24 @@ public sealed class DestinationDialog : Form
         Controls.Add(_preset);
         y += rowH;
 
-        AddLabel("Name:", labelX, y);
+        AddLabel(Strings.Dest_Name, labelX, y);
         _name.SetBounds(fieldX, y - 3, fieldW, 24);
         Controls.Add(_name);
         y += rowH;
 
-        AddLabel("IP address:", labelX, y);
+        AddLabel(Strings.Dest_Ip, labelX, y);
         _ip.SetBounds(fieldX, y - 3, fieldW, 24);
         Controls.Add(_ip);
         y += rowH;
 
-        AddLabel("Port:", labelX, y);
+        AddLabel(Strings.Dest_PortLabel, labelX, y);
         _port.SetBounds(fieldX, y - 3, 90, 24);
         _port.Minimum = 1;
         _port.Maximum = 65535;
         Controls.Add(_port);
         y += rowH;
 
-        _enabled.Text = "Enabled";
+        _enabled.Text = Strings.Dest_Enabled;
         _enabled.SetBounds(fieldX, y, 120, 24);
         Controls.Add(_enabled);
         y += rowH;
@@ -67,12 +68,12 @@ public sealed class DestinationDialog : Form
         _note.Font = new Font("Segoe UI", 8f, FontStyle.Italic);
         Controls.Add(_note);
 
-        var ok = new Button { Text = "OK", DialogResult = DialogResult.None };
+        var ok = new Button { Text = Strings.Dest_Ok, DialogResult = DialogResult.None };
         ok.SetBounds(ClientSize.Width - 180, ClientSize.Height - 36, 80, 26);
         ok.Click += OnOk;
         Controls.Add(ok);
 
-        var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };
+        var cancel = new Button { Text = Strings.Dest_Cancel, DialogResult = DialogResult.Cancel };
         cancel.SetBounds(ClientSize.Width - 92, ClientSize.Height - 36, 80, 26);
         Controls.Add(cancel);
 
@@ -129,17 +130,15 @@ public sealed class DestinationDialog : Form
     {
         if (string.IsNullOrWhiteSpace(_name.Text))
         {
-            MessageBox.Show(this, "Please enter a name.", "Missing name",
+            MessageBox.Show(this, Strings.Dest_MissingName, Strings.Main_Title,
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
         if (!IPAddress.TryParse(_ip.Text.Trim(), out _))
         {
-            MessageBox.Show(this,
-                "That IP address isn't valid.\n\nUse 127.0.0.1 for tools on this PC, or the " +
-                "device's IP (e.g. 192.168.x.x) for a phone/tablet dashboard.",
-                "Invalid IP", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(this, Strings.Dest_InvalidIp, Strings.Main_Title,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 

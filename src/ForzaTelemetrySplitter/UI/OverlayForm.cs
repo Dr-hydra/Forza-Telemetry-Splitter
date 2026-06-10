@@ -102,8 +102,8 @@ public sealed class OverlayForm : Form
 
         // Label: live readout when connected, otherwise the plain status.
         string label = _connected
-            ? (string.IsNullOrEmpty(_readout) ? "Connected" : _readout)
-            : "No data";
+            ? (string.IsNullOrEmpty(_readout) ? Resources.Strings.Overlay_Connected : _readout)
+            : Resources.Strings.Overlay_NoData;
         using var text = new SolidBrush(Color.White);
         var textRect = new Rectangle(32, 0, Width - 36, Height);
         var fmt = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near };

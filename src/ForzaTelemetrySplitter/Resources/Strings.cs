@@ -1,0 +1,95 @@
+using System.Globalization;
+using System.Resources;
+
+namespace ForzaTelemetrySplitter.Resources;
+
+/// <summary>
+/// Strongly-typed access to the localized UI strings (Strings.resx + Strings.&lt;culture&gt;.resx).
+/// Backed by a ResourceManager keyed off the embedded resource base name; the value returned
+/// follows <see cref="CultureInfo.CurrentUICulture"/>, which Program sets at startup.
+///
+/// Written by hand (rather than the ResX designer generator) so it works reliably regardless of
+/// generator settings and is easy to audit.
+/// </summary>
+public static class Strings
+{
+    private static readonly ResourceManager Rm =
+        new("ForzaTelemetrySplitter.Resources.Strings", typeof(Strings).Assembly);
+
+    /// <summary>Look up a key for the current UI culture. Returns the key itself if missing
+    /// (visible-but-safe, never throws).</summary>
+    public static string Get(string key) => Rm.GetString(key, CultureInfo.CurrentUICulture) ?? key;
+
+    /// <summary>Look up and format with arguments.</summary>
+    public static string Format(string key, params object[] args)
+        => string.Format(CultureInfo.CurrentCulture, Get(key), args);
+
+    // Tray menu
+    public static string Tray_Open => Get(nameof(Tray_Open));
+    public static string Tray_StartSplitting => Get(nameof(Tray_StartSplitting));
+    public static string Tray_StopSplitting => Get(nameof(Tray_StopSplitting));
+    public static string Tray_ShowOverlay => Get(nameof(Tray_ShowOverlay));
+    public static string Tray_SetupGuide => Get(nameof(Tray_SetupGuide));
+    public static string Tray_CheckUpdates => Get(nameof(Tray_CheckUpdates));
+    public static string Tray_Exit => Get(nameof(Tray_Exit));
+
+    // Main window
+    public static string Main_Title => Get(nameof(Main_Title));
+    public static string Main_Add => Get(nameof(Main_Add));
+    public static string Main_Edit => Get(nameof(Main_Edit));
+    public static string Main_Remove => Get(nameof(Main_Remove));
+    public static string Main_ListenInfo(string ip, int port) => Format(nameof(Main_ListenInfo), ip, port);
+    public static string Col_On => Get(nameof(Col_On));
+    public static string Col_Name => Get(nameof(Col_Name));
+    public static string Col_Ip => Get(nameof(Col_Ip));
+    public static string Col_Port => Get(nameof(Col_Port));
+    public static string Col_Forwarded => Get(nameof(Col_Forwarded));
+
+    // Status
+    public static string Status_Stopped => Get(nameof(Status_Stopped));
+    public static string Status_WaitingForForza(string ip, int port) => Format(nameof(Status_WaitingForForza), ip, port);
+    public static string Status_Connected(string game, int pps, string race, string readout)
+        => Format(nameof(Status_Connected), game, pps, race, readout);
+    public static string Status_RaceOn => Get(nameof(Status_RaceOn));
+    public static string Status_RaceOff => Get(nameof(Status_RaceOff));
+    public static string Readout_Gear(string gear, string speed) => Format(nameof(Readout_Gear), gear, speed);
+
+    // Overlay
+    public static string Overlay_Connected => Get(nameof(Overlay_Connected));
+    public static string Overlay_NoData => Get(nameof(Overlay_NoData));
+
+    // Remove confirm
+    public static string Remove_Confirm(string name) => Format(nameof(Remove_Confirm), name);
+    public static string Remove_Title => Get(nameof(Remove_Title));
+
+    // Destination dialog
+    public static string Dest_AddTitle => Get(nameof(Dest_AddTitle));
+    public static string Dest_EditTitle => Get(nameof(Dest_EditTitle));
+    public static string Dest_Preset => Get(nameof(Dest_Preset));
+    public static string Dest_Name => Get(nameof(Dest_Name));
+    public static string Dest_Ip => Get(nameof(Dest_Ip));
+    public static string Dest_PortLabel => Get(nameof(Dest_PortLabel));
+    public static string Dest_Enabled => Get(nameof(Dest_Enabled));
+    public static string Dest_Ok => Get(nameof(Dest_Ok));
+    public static string Dest_Cancel => Get(nameof(Dest_Cancel));
+    public static string Dest_MissingName => Get(nameof(Dest_MissingName));
+    public static string Dest_InvalidIp => Get(nameof(Dest_InvalidIp));
+
+    // Welcome
+    public static string Welcome_Title => Get(nameof(Welcome_Title));
+    public static string Welcome_Intro => Get(nameof(Welcome_Intro));
+    public static string Welcome_StepHeading => Get(nameof(Welcome_StepHeading));
+    public static string Welcome_Path => Get(nameof(Welcome_Path));
+    public static string Welcome_Note => Get(nameof(Welcome_Note));
+    public static string Welcome_DontShow => Get(nameof(Welcome_DontShow));
+    public static string Welcome_OpenGuide => Get(nameof(Welcome_OpenGuide));
+    public static string Welcome_GetStarted => Get(nameof(Welcome_GetStarted));
+
+    // Language selector
+    public static string Lang_Label => Get(nameof(Lang_Label));
+    public static string Lang_Auto => Get(nameof(Lang_Auto));
+    public static string Lang_RestartNote => Get(nameof(Lang_RestartNote));
+
+    // Errors
+    public static string Error_PortInUse(int port) => Format(nameof(Error_PortInUse), port);
+}

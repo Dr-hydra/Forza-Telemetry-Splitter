@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /></xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Tray_Open" xml:space="preserve"><value>開く</value></data>
+  <data name="Tray_StartSplitting" xml:space="preserve"><value>分配を開始</value></data>
+  <data name="Tray_StopSplitting" xml:space="preserve"><value>分配を停止</value></data>
+  <data name="Tray_ShowOverlay" xml:space="preserve"><value>オーバーレイを表示</value></data>
+  <data name="Tray_SetupGuide" xml:space="preserve"><value>セットアップガイド…</value></data>
+  <data name="Tray_CheckUpdates" xml:space="preserve"><value>更新を確認…</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>終了</value></data>
+
+  <data name="Main_Title" xml:space="preserve"><value>Forza Telemetry Splitter</value></data>
+  <data name="Main_Add" xml:space="preserve"><value>追加</value></data>
+  <data name="Main_Edit" xml:space="preserve"><value>編集</value></data>
+  <data name="Main_Remove" xml:space="preserve"><value>削除</value></data>
+  <data name="Main_ListenInfo" xml:space="preserve"><value>{0}:{1} で Forza を待機中  →  転送先:</value></data>
+  <data name="Col_On" xml:space="preserve"><value>有効</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>名前</value></data>
+  <data name="Col_Ip" xml:space="preserve"><value>IP</value></data>
+  <data name="Col_Port" xml:space="preserve"><value>ポート</value></data>
+  <data name="Col_Forwarded" xml:space="preserve"><value>転送数</value></data>
+
+  <data name="Status_Stopped" xml:space="preserve"><value>停止中</value></data>
+  <data name="Status_WaitingForForza" xml:space="preserve"><value>実行中 — Forza を待機中（Data Out を {0}:{1} に設定）</value></data>
+  <data name="Status_Connected" xml:space="preserve"><value>{0} 接続済み — {1} パケット/秒 — レース {2} — {3}</value></data>
+  <data name="Status_RaceOn" xml:space="preserve"><value>オン</value></data>
+  <data name="Status_RaceOff" xml:space="preserve"><value>オフ</value></data>
+  <data name="Readout_Gear" xml:space="preserve"><value>ギア {0}   {1}</value></data>
+
+  <data name="Overlay_Connected" xml:space="preserve"><value>接続済み</value></data>
+  <data name="Overlay_NoData" xml:space="preserve"><value>データなし</value></data>
+
+  <data name="Remove_Confirm" xml:space="preserve"><value>「{0}」を削除しますか？</value></data>
+  <data name="Remove_Title" xml:space="preserve"><value>転送先を削除</value></data>
+
+  <data name="Dest_AddTitle" xml:space="preserve"><value>転送先を追加</value></data>
+  <data name="Dest_EditTitle" xml:space="preserve"><value>転送先を編集</value></data>
+  <data name="Dest_Preset" xml:space="preserve"><value>プリセット:</value></data>
+  <data name="Dest_Name" xml:space="preserve"><value>名前:</value></data>
+  <data name="Dest_Ip" xml:space="preserve"><value>IP アドレス:</value></data>
+  <data name="Dest_PortLabel" xml:space="preserve"><value>ポート:</value></data>
+  <data name="Dest_Enabled" xml:space="preserve"><value>有効</value></data>
+  <data name="Dest_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dest_Cancel" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="Dest_MissingName" xml:space="preserve"><value>名前を入力してください。</value></data>
+  <data name="Dest_InvalidIp" xml:space="preserve"><value>IP アドレスが正しくありません。このPC上のツールには 127.0.0.1 を、スマホ/タブレットのダッシュボードにはそのデバイスのIP（例: 192.168.x.x）を使用してください。</value></data>
+
+  <data name="Welcome_Title" xml:space="preserve"><value>Forza Telemetry Splitter へようこそ</value></data>
+  <data name="Welcome_Intro" xml:space="preserve"><value>このアプリは Forza のテレメトリを複数のツールへ同時に送信します。設定は1つだけ: Forza の送信先をこのアプリに向けてください。</value></data>
+  <data name="Welcome_StepHeading" xml:space="preserve"><value>お使いの Forza（Horizon または Motorsport）で:</value></data>
+  <data name="Welcome_Path" xml:space="preserve"><value>設定  &gt;  HUD とゲームプレイ  &gt;  Data Out</value></data>
+  <data name="Welcome_Note" xml:space="preserve"><value>ゲームは自動的に検出されます。他のツールはそのままで大丈夫です — このアプリが各ツールの通常ポートへ転送します（VirtualTCU は 5555 のまま）。</value></data>
+  <data name="Welcome_DontShow" xml:space="preserve"><value>今後表示しない</value></data>
+  <data name="Welcome_OpenGuide" xml:space="preserve"><value>詳しいセットアップガイドを開く</value></data>
+  <data name="Welcome_GetStarted" xml:space="preserve"><value>はじめる</value></data>
+
+  <data name="Lang_Label" xml:space="preserve"><value>言語:</value></data>
+  <data name="Lang_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Lang_RestartNote" xml:space="preserve"><value>新しい言語を完全に適用するにはアプリを再起動してください。</value></data>
+
+  <data name="Error_PortInUse" xml:space="preserve"><value>ポート {0} は別のアプリが使用中です。
+
+Forza Telemetry Splitter は Forza から受信するために専用の空きポートが必要です。別のツール（またはこのアプリの別のコピー）がこのポートを使用しています。
+
+対処: このアプリを開いて待機ポートを空いている番号に変更し、Forza の Data Out ポートも同じ値に設定してください。既定の {0} は通常空いています。</value></data>
+</root>

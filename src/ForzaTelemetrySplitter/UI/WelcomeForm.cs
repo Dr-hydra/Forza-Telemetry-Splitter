@@ -1,4 +1,5 @@
 using ForzaTelemetrySplitter.Config;
+using ForzaTelemetrySplitter.Resources;
 
 namespace ForzaTelemetrySplitter.UI;
 
@@ -20,7 +21,7 @@ public sealed class WelcomeForm : Form
     {
         _config = config;
 
-        Text = "Welcome to Forza Telemetry Splitter";
+        Text = Strings.Welcome_Title;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
@@ -33,15 +34,14 @@ public sealed class WelcomeForm : Form
 
         var intro = new Label
         {
-            Text = "This app sends Forza's telemetry to several tools at once. " +
-                   "There's one thing to set up: point Forza at the splitter.",
+            Text = Strings.Welcome_Intro,
             AutoSize = false,
         };
         intro.SetBounds(x, y, w, 40);
         Controls.Add(intro);
         y += 48;
 
-        var stepHeading = new Label { Text = "In your Forza game (Horizon or Motorsport):", AutoSize = true };
+        var stepHeading = new Label { Text = Strings.Welcome_StepHeading, AutoSize = true };
         stepHeading.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
         stepHeading.SetBounds(x, y, w, 20);
         Controls.Add(stepHeading);
@@ -49,7 +49,7 @@ public sealed class WelcomeForm : Form
 
         var path = new Label
         {
-            Text = "Settings  >  HUD and Gameplay  >  Data Out",
+            Text = Strings.Welcome_Path,
             AutoSize = false,
         };
         path.SetBounds(x, y, w, 20);
@@ -77,8 +77,7 @@ public sealed class WelcomeForm : Form
 
         var note = new Label
         {
-            Text = "Your game is detected automatically. Leave your other tools as they are — the " +
-                   "splitter forwards to each on its normal port (VirtualTCU stays on 5555).",
+            Text = Strings.Welcome_Note,
             AutoSize = false,
             ForeColor = Color.DimGray,
         };
@@ -86,17 +85,17 @@ public sealed class WelcomeForm : Form
         Controls.Add(note);
         y += 42;
 
-        _dontShowAgain.Text = "Don't show this again";
+        _dontShowAgain.Text = Strings.Welcome_DontShow;
         _dontShowAgain.Checked = true;
         _dontShowAgain.SetBounds(x, y, 200, 22);
         Controls.Add(_dontShowAgain);
 
-        var guideLink = new LinkLabel { Text = "Open full setup guide", AutoSize = true };
+        var guideLink = new LinkLabel { Text = Strings.Welcome_OpenGuide, AutoSize = true };
         guideLink.SetBounds(x, y + 28, 160, 20);
         guideLink.LinkClicked += (_, _) => OpenUrl(SetupGuideUrl);
         Controls.Add(guideLink);
 
-        var getStarted = new Button { Text = "Get started" };
+        var getStarted = new Button { Text = Strings.Welcome_GetStarted };
         getStarted.SetBounds(ClientSize.Width - 130, ClientSize.Height - 40, 112, 28);
         getStarted.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
         getStarted.DialogResult = DialogResult.OK;

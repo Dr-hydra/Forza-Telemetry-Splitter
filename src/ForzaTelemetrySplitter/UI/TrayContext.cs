@@ -1,4 +1,5 @@
 using ForzaTelemetrySplitter.Config;
+using ForzaTelemetrySplitter.Resources;
 
 namespace ForzaTelemetrySplitter.UI;
 
@@ -22,17 +23,17 @@ public sealed class TrayContext : ApplicationContext
         _mainForm = mainForm;
         _overlay = overlay;
 
-        _showOverlayItem = new ToolStripMenuItem("Show overlay", null, OnToggleOverlay) { Checked = config.ShowOverlay };
-        _startStopItem = new ToolStripMenuItem("Start splitting", null, OnToggleSplitting);
+        _showOverlayItem = new ToolStripMenuItem(Strings.Tray_ShowOverlay, null, OnToggleOverlay) { Checked = config.ShowOverlay };
+        _startStopItem = new ToolStripMenuItem(Strings.Tray_StartSplitting, null, OnToggleSplitting);
 
         var menu = new ContextMenuStrip();
-        menu.Items.Add(new ToolStripMenuItem("Open", null, (_, _) => ShowMainWindow()));
+        menu.Items.Add(new ToolStripMenuItem(Strings.Tray_Open, null, (_, _) => ShowMainWindow()));
         menu.Items.Add(_startStopItem);
         menu.Items.Add(_showOverlayItem);
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(new ToolStripMenuItem("Setup guide…", null, OnSetupGuide));
-        menu.Items.Add(new ToolStripMenuItem("Check for updates…", null, OnCheckForUpdates));
-        menu.Items.Add(new ToolStripMenuItem("Exit", null, OnExit));
+        menu.Items.Add(new ToolStripMenuItem(Strings.Tray_SetupGuide, null, OnSetupGuide));
+        menu.Items.Add(new ToolStripMenuItem(Strings.Tray_CheckUpdates, null, OnCheckForUpdates));
+        menu.Items.Add(new ToolStripMenuItem(Strings.Tray_Exit, null, OnExit));
 
         _tray = new NotifyIcon
         {
@@ -45,6 +46,7 @@ public sealed class TrayContext : ApplicationContext
 
         _mainForm.RunStateChanged += RefreshRunState;
         _mainForm.Engine.ErrorOccurred += OnEngineErrorBalloon;
+        _mainForm.Engine.PortInUse += port => OnEngineErrorBalloon(Strings.Error_PortInUse(port));
 
         // Apply persisted overlay visibility.
         ApplyOverlayVisibility();
@@ -120,7 +122,7 @@ public sealed class TrayContext : ApplicationContext
 
     private void RefreshRunState()
     {
-        _startStopItem.Text = _mainForm.Engine.Running ? "Stop splitting" : "Start splitting";
+        _startStopItem.Text = _mainForm.Engine.Running ? Strings.Tray_StopSplitting : Strings.Tray_StartSplitting;
     }
 
     private void OnEngineErrorBalloon(string message)

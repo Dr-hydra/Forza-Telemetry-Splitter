@@ -40,19 +40,28 @@ jobs:
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
         shell: pwsh
 
+      # Name the released portable build ftsPortable.exe (abbreviated/low-profile so the installer
+      # reads as the recommended download). The internal assembly name is unchanged.
+      - name: Prepare release artifacts
+        run: Copy-Item publish/ForzaTelemetrySplitter.exe publish/ftsPortable.exe -Force
+        shell: pwsh
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ForzaTelemetrySplitter
           path: |
-            publish/ForzaTelemetrySplitter.exe
             publish/ForzaTelemetrySplitterInstaller.exe
+            publish/ftsPortable.exe
 
-      # On a version tag, attach both the portable exe and the installer to a GitHub Release.
-      - name: Attach to release
+      # Release ONLY on a version tag. CI builds fresh and creates/populates the GitHub Release —
+      # do not also create releases manually (that caused asset-clobber/auth conflicts). A normal
+      # push to main never touches releases.
+      - name: Create release and attach assets
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          fail_on_unmatched_files: true
           files: |
-            publish/ForzaTelemetrySplitter.exe
             publish/ForzaTelemetrySplitterInstaller.exe
+            publish/ftsPortable.exe

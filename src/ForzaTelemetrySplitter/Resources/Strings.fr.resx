@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /></xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Tray_Open" xml:space="preserve"><value>Ouvrir</value></data>
+  <data name="Tray_StartSplitting" xml:space="preserve"><value>Démarrer la répartition</value></data>
+  <data name="Tray_StopSplitting" xml:space="preserve"><value>Arrêter la répartition</value></data>
+  <data name="Tray_ShowOverlay" xml:space="preserve"><value>Afficher l'overlay</value></data>
+  <data name="Tray_SetupGuide" xml:space="preserve"><value>Guide de configuration…</value></data>
+  <data name="Tray_CheckUpdates" xml:space="preserve"><value>Rechercher des mises à jour…</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>Quitter</value></data>
+
+  <data name="Main_Title" xml:space="preserve"><value>Forza Telemetry Splitter</value></data>
+  <data name="Main_Add" xml:space="preserve"><value>Ajouter</value></data>
+  <data name="Main_Edit" xml:space="preserve"><value>Modifier</value></data>
+  <data name="Main_Remove" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Main_ListenInfo" xml:space="preserve"><value>Écoute de Forza sur {0}:{1}  →  transfert vers :</value></data>
+  <data name="Col_On" xml:space="preserve"><value>Activé</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>Nom</value></data>
+  <data name="Col_Ip" xml:space="preserve"><value>IP</value></data>
+  <data name="Col_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="Col_Forwarded" xml:space="preserve"><value>Transférés</value></data>
+
+  <data name="Status_Stopped" xml:space="preserve"><value>Arrêté</value></data>
+  <data name="Status_WaitingForForza" xml:space="preserve"><value>En cours — en attente de Forza (réglez Data Out sur {0}:{1})</value></data>
+  <data name="Status_Connected" xml:space="preserve"><value>{0} connecté — {1} paquets/s — Course {2} — {3}</value></data>
+  <data name="Status_RaceOn" xml:space="preserve"><value>ACTIVE</value></data>
+  <data name="Status_RaceOff" xml:space="preserve"><value>INACTIVE</value></data>
+  <data name="Readout_Gear" xml:space="preserve"><value>Rapport {0}   {1}</value></data>
+
+  <data name="Overlay_Connected" xml:space="preserve"><value>Connecté</value></data>
+  <data name="Overlay_NoData" xml:space="preserve"><value>Aucune donnée</value></data>
+
+  <data name="Remove_Confirm" xml:space="preserve"><value>Supprimer « {0} » ?</value></data>
+  <data name="Remove_Title" xml:space="preserve"><value>Supprimer la destination</value></data>
+
+  <data name="Dest_AddTitle" xml:space="preserve"><value>Ajouter une destination</value></data>
+  <data name="Dest_EditTitle" xml:space="preserve"><value>Modifier la destination</value></data>
+  <data name="Dest_Preset" xml:space="preserve"><value>Préréglage :</value></data>
+  <data name="Dest_Name" xml:space="preserve"><value>Nom :</value></data>
+  <data name="Dest_Ip" xml:space="preserve"><value>Adresse IP :</value></data>
+  <data name="Dest_PortLabel" xml:space="preserve"><value>Port :</value></data>
+  <data name="Dest_Enabled" xml:space="preserve"><value>Activé</value></data>
+  <data name="Dest_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dest_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Dest_MissingName" xml:space="preserve"><value>Veuillez saisir un nom.</value></data>
+  <data name="Dest_InvalidIp" xml:space="preserve"><value>Cette adresse IP n'est pas valide. Utilisez 127.0.0.1 pour les outils sur ce PC, ou l'IP de l'appareil (par ex. 192.168.x.x) pour un tableau de bord sur téléphone/tablette.</value></data>
+
+  <data name="Welcome_Title" xml:space="preserve"><value>Bienvenue dans Forza Telemetry Splitter</value></data>
+  <data name="Welcome_Intro" xml:space="preserve"><value>Cette application envoie la télémétrie de Forza à plusieurs outils à la fois. Une seule chose à configurer : dirigez Forza vers le répartiteur.</value></data>
+  <data name="Welcome_StepHeading" xml:space="preserve"><value>Dans votre jeu Forza (Horizon ou Motorsport) :</value></data>
+  <data name="Welcome_Path" xml:space="preserve"><value>Paramètres  &gt;  HUD et gameplay  &gt;  Data Out</value></data>
+  <data name="Welcome_Note" xml:space="preserve"><value>Votre jeu est détecté automatiquement. Laissez vos autres outils tels quels — le répartiteur transfère vers chacun sur son port habituel (VirtualTCU reste sur 5555).</value></data>
+  <data name="Welcome_DontShow" xml:space="preserve"><value>Ne plus afficher</value></data>
+  <data name="Welcome_OpenGuide" xml:space="preserve"><value>Ouvrir le guide complet</value></data>
+  <data name="Welcome_GetStarted" xml:space="preserve"><value>Commencer</value></data>
+
+  <data name="Lang_Label" xml:space="preserve"><value>Langue :</value></data>
+  <data name="Lang_Auto" xml:space="preserve"><value>Auto</value></data>
+  <data name="Lang_RestartNote" xml:space="preserve"><value>Redémarrez l'application pour appliquer entièrement la nouvelle langue.</value></data>
+
+  <data name="Error_PortInUse" xml:space="preserve"><value>Le port {0} est déjà utilisé par une autre application.
+
+Forza Telemetry Splitter a besoin de son propre port libre pour recevoir les données de Forza. Un autre outil (ou une seconde copie du répartiteur) occupe ce port.
+
+Solution : ouvrez le répartiteur et changez son port d'écoute pour un port libre, puis réglez le port Data Out de Forza sur la même valeur. Le port par défaut {0} est normalement libre.</value></data>
+</root>

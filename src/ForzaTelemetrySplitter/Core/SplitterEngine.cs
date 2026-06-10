@@ -51,8 +51,15 @@ public sealed class SplitterEngine
     private int _packetsPerSecond;          // last completed 1s window
     private long _windowStartTicks;
 
-    /// <summary>Raised (on the rx thread) when binding fails or the socket dies unexpectedly.</summary>
+    /// <summary>Raised when binding fails or the socket dies unexpectedly (already-formatted text).</summary>
     public event Action<string>? ErrorOccurred;
+
+    /// <summary>
+    /// Raised when the listen port is already in use (carries the port). Kept separate from
+    /// ErrorOccurred so the UI can present a localized message — the engine stays free of any
+    /// resource/UI dependency (the test harnesses compile this file standalone).
+    /// </summary>
+    public event Action<int>? PortInUse;
 
     public bool Running => _running;
 
@@ -125,12 +132,7 @@ public sealed class SplitterEngine
                 // exclusively-bound UDP port (e.g. VirtualTCU on 5555) as AccessDenied, not
                 // AddressAlreadyInUse — so we must treat them the same.
                 _running = false;
-                ErrorOccurred?.Invoke(
-                    $"Port {listenPort} is already in use by another app.\n\n" +
-                    "Forza Telemetry Splitter needs its own free port to receive from Forza. " +
-                    "Another tool (or a second copy of the splitter) is holding this one.\n\n" +
-                    $"Fix: open the splitter and change its listen port to a free one, then set " +
-                    $"Forza's Data Out port to match. The default {listenPort} is normally free.");
+                PortInUse?.Invoke(listenPort);
                 return false;
             }
             catch (Exception ex)

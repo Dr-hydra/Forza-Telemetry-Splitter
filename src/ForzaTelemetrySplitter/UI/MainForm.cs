@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using ForzaTelemetrySplitter.Config;
 using ForzaTelemetrySplitter.Core;
+using ForzaTelemetrySplitter.Resources;
 
 namespace ForzaTelemetrySplitter.UI;
 
@@ -18,7 +19,15 @@ public sealed class MainForm : Form
     private readonly Label _status = new();
     private readonly Label _listenInfo = new();
     private readonly ComboBox _units = new();
+    private readonly ComboBox _language = new();
     private readonly System.Windows.Forms.Timer _uiTimer = new();
+
+    // Index order of the language dropdown items.
+    private static readonly AppLanguage[] _languageOrder =
+    {
+        AppLanguage.Auto, AppLanguage.English, AppLanguage.Japanese,
+        AppLanguage.French, AppLanguage.German, AppLanguage.Spanish,
+    };
 
     private readonly OverlayForm _overlay;
 
@@ -44,7 +53,7 @@ public sealed class MainForm : Form
         _engine = engine;
         _overlay = overlay;
 
-        Text = "Forza Telemetry Splitter";
+        Text = Strings.Main_Title;
         ClientSize = new Size(560, 380);
         MinimumSize = new Size(480, 320);
         StartPosition = FormStartPosition.CenterScreen;
@@ -54,6 +63,7 @@ public sealed class MainForm : Form
         RefreshGrid();
 
         _engine.ErrorOccurred += OnEngineError;
+        _engine.PortInUse += OnPortInUse;
 
         _uiTimer.Interval = 250; // ~4 Hz
         _uiTimer.Tick += (_, _) => UpdateStatus();
@@ -65,7 +75,7 @@ public sealed class MainForm : Form
         _listenInfo.SetBounds(12, 10, ClientSize.Width - 24, 20);
         _listenInfo.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         _listenInfo.ForeColor = Color.DimGray;
-        _listenInfo.Text = $"Listening for Forza on {_config.ListenIp}:{_config.ListenPort}  →  forwarding to:";
+        _listenInfo.Text = Strings.Main_ListenInfo(_config.ListenIp, _config.ListenPort);
         Controls.Add(_listenInfo);
 
         // Destination grid
@@ -78,22 +88,22 @@ public sealed class MainForm : Form
         _grid.MultiSelect = false;
         _grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         _grid.EditMode = DataGridViewEditMode.EditProgrammatically;
-        _grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = "On", Name = "Enabled", FillWeight = 12 });
-        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Name", Name = "Name", FillWeight = 32 });
-        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "IP", Name = "Ip", FillWeight = 30 });
-        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Port", Name = "Port", FillWeight = 14 });
-        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Forwarded", Name = "Count", FillWeight = 22 });
+        _grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = Strings.Col_On, Name = "Enabled", FillWeight = 12 });
+        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = Strings.Col_Name, Name = "Name", FillWeight = 32 });
+        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = Strings.Col_Ip, Name = "Ip", FillWeight = 30 });
+        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = Strings.Col_Port, Name = "Port", FillWeight = 14 });
+        _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = Strings.Col_Forwarded, Name = "Count", FillWeight = 22 });
         _grid.CellContentClick += OnGridCellClick;
         _grid.CellDoubleClick += (_, e) => { if (e.RowIndex >= 0) EditSelected(); };
         Controls.Add(_grid);
 
         // Buttons row
         int by = ClientSize.Height - 84;
-        var add = MakeButton("Add", 12, by, AnchorStyles.Bottom | AnchorStyles.Left);
+        var add = MakeButton(Strings.Main_Add, 12, by, AnchorStyles.Bottom | AnchorStyles.Left);
         add.Click += (_, _) => AddDestination();
-        var edit = MakeButton("Edit", 96, by, AnchorStyles.Bottom | AnchorStyles.Left);
+        var edit = MakeButton(Strings.Main_Edit, 96, by, AnchorStyles.Bottom | AnchorStyles.Left);
         edit.Click += (_, _) => EditSelected();
-        var remove = MakeButton("Remove", 180, by, AnchorStyles.Bottom | AnchorStyles.Left);
+        var remove = MakeButton(Strings.Main_Remove, 180, by, AnchorStyles.Bottom | AnchorStyles.Left);
         remove.Click += (_, _) => RemoveSelected();
 
         // Speed-unit toggle (Mph / Kph), persisted to config.
@@ -108,6 +118,16 @@ public sealed class MainForm : Form
             ConfigStore.Save(_config);
         };
         Controls.Add(_units);
+
+        // Language selector (top-right). Entries use native names so they're recognizable in any UI
+        // language; "Auto" follows the Windows display language. Order maps to _languageOrder below.
+        _language.DropDownStyle = ComboBoxStyle.DropDownList;
+        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español" });
+        _language.SelectedIndex = Array.IndexOf(_languageOrder, _config.Language) is var i && i >= 0 ? i : 0;
+        _language.SetBounds(ClientSize.Width - 132, 8, 120, 24);
+        _language.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        _language.SelectedIndexChanged += OnLanguageChanged;
+        Controls.Add(_language);
 
         _startStop.SetBounds(ClientSize.Width - 132, by, 120, 28);
         _startStop.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -188,7 +208,7 @@ public sealed class MainForm : Form
     {
         var d = Selected;
         if (d is null) return;
-        if (MessageBox.Show(this, $"Remove \"{d.Name}\"?", "Remove destination",
+        if (MessageBox.Show(this, Strings.Remove_Confirm(d.Name), Strings.Remove_Title,
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             return;
         _config.Destinations.Remove(d);
@@ -250,7 +270,22 @@ public sealed class MainForm : Form
 
     private void UpdateStartStopButton()
     {
-        _startStop.Text = _engine.Running ? "Stop splitting" : "Start splitting";
+        _startStop.Text = _engine.Running ? Strings.Tray_StopSplitting : Strings.Tray_StartSplitting;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        int idx = _language.SelectedIndex;
+        if (idx < 0 || idx >= _languageOrder.Length) return;
+
+        _config.Language = _languageOrder[idx];
+        ConfigStore.Save(_config);
+        Program.ApplyCulture(_config.Language);
+
+        // Strings already shown on built controls don't retranslate live; a relaunch applies the
+        // language everywhere. Tell the user (in the newly-selected language).
+        MessageBox.Show(this, Strings.Lang_RestartNote, Strings.Main_Title,
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void UpdateStatus()
@@ -265,17 +300,22 @@ public sealed class MainForm : Form
         }
 
         // Live gear + speed readout, shown when telemetry is flowing.
-        string readout = $"Gear {SpeedUnitExtensions.FormatGear(s.Gear)}   " +
-                         $"{SpeedUnitExtensions.FormatSpeed(s.SpeedMps, _config.SpeedUnit)}";
+        string readout = Strings.Readout_Gear(
+            SpeedUnitExtensions.FormatGear(s.Gear),
+            SpeedUnitExtensions.FormatSpeed(s.SpeedMps, _config.SpeedUnit));
 
         string dot = s.Receiving ? "🟢" : (s.Running ? "🟡" : "⚪");
         string text;
         if (!s.Running)
-            text = $"{dot}  Stopped";
+            text = $"{dot}  {Strings.Status_Stopped}";
         else if (s.Receiving)
-            text = $"{dot}  {ForzaPacket.GameName(s.Format)} connected — {s.PacketsPerSecond} pkts/s — Race {(s.IsRaceOn ? "ON" : "OFF")} — {readout}";
+            text = $"{dot}  " + Strings.Status_Connected(
+                ForzaPacket.GameName(s.Format),
+                s.PacketsPerSecond,
+                s.IsRaceOn ? Strings.Status_RaceOn : Strings.Status_RaceOff,
+                readout);
         else
-            text = $"{dot}  Running — waiting for Forza (set Data Out → {_config.ListenIp}:{_config.ListenPort})";
+            text = $"{dot}  {Strings.Status_WaitingForForza(_config.ListenIp, _config.ListenPort)}";
         _status.Text = text;
 
         _overlay.SetStatus(s.Receiving, readout);
@@ -288,7 +328,17 @@ public sealed class MainForm : Form
 
         UpdateStartStopButton();
         RunStateChanged?.Invoke();
-        MessageBox.Show(this, message, "Forza Telemetry Splitter",
+        MessageBox.Show(this, message, Strings.Main_Title,
+            MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
+    private void OnPortInUse(int port)
+    {
+        if (InvokeRequired) { BeginInvoke(new Action<int>(OnPortInUse), port); return; }
+
+        UpdateStartStopButton();
+        RunStateChanged?.Invoke();
+        MessageBox.Show(this, Strings.Error_PortInUse(port), Strings.Main_Title,
             MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 

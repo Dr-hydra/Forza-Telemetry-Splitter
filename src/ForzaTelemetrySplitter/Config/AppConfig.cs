@@ -34,6 +34,9 @@ public sealed class AppConfig
     /// <summary>Display unit for the live speed readout. Defaults from the Windows region.</summary>
     public SpeedUnit SpeedUnit { get; set; } = SpeedUnitExtensions.FromRegion();
 
+    /// <summary>UI language. Auto (default) follows the Windows display language.</summary>
+    public AppLanguage Language { get; set; } = AppLanguage.Auto;
+
     public List<Destination> Destinations { get; set; } = new();
 
     /// <summary>

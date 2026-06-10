@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>LocaleTest</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <!-- Reference the real app so we exercise the actual Strings accessor + satellite assemblies. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ForzaTelemetrySplitter\ForzaTelemetrySplitter.csproj" />
+  </ItemGroup>
+
+</Project>

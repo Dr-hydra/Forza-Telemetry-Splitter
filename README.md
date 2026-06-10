@@ -1,5 +1,7 @@
 # Forza Telemetry Splitter
 
+**English** · [日本語](README.ja.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md)
+
 Send Forza Horizon's telemetry to several tools at once.
 
 Forza Horizon 6's "Data Out" telemetry can only be sent to one IP and port. That forces a choice:
@@ -56,7 +58,8 @@ Recommended — the installer:
    and an optional "Start automatically when Windows starts" checkbox.
 4. It launches into the system tray when finished.
 
-Prefer no install? Download the portable `ForzaTelemetrySplitter.exe` instead and run it directly.
+Advanced / no install: download `ftsPortable.exe` instead and run it directly. The installer above is
+recommended for most people.
 
 If you can't find the tray icon, Windows hides new ones by default. Click the small chevron (^) at the
 bottom-right of the taskbar, then drag the icon onto the taskbar to keep it visible.
@@ -143,3 +146,18 @@ on/off). Deleting it resets the app to defaults on next launch.
 
 Windows 10 and Windows 11. Forza Horizon 4/5/6 and Forza Motorsport (7, 2023) — auto-detected by
 packet format.
+
+The app interface is available in English, 日本語, Français, Deutsch, and Español, selected
+automatically from your Windows language (changeable in the app).
+
+<!--
+Keywords for search / discoverability:
+Forza Horizon 6 telemetry splitter, Forza Data Out, run VirtualTCU with a tuner and dashboard at once,
+touge / drift telemetry, multi-tool telemetry forwarder.
+日本語: フォルツァ ホライゾン6 テレメトリ 分配, Data Out を複数ツールへ, VirtualTCU 併用, 自動シフト,
+峠 ドリフト テレメトリ, ダッシュボードと同時利用.
+Français : répartiteur de télémétrie Forza, utiliser plusieurs outils en même temps.
+Deutsch: Forza Telemetrie-Verteiler, mehrere Tools gleichzeitig nutzen.
+Español: divisor de telemetría de Forza, usar varias herramientas a la vez.
+-->
+

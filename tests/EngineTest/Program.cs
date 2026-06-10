@@ -92,24 +92,27 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     using var squatter = new UdpClient(new IPEndPoint(IPAddress.Parse(ip), listenPort));
 
     var engine = new SplitterEngine();
+    int conflictPort = -1;
     string? error = null;
+    engine.PortInUse += p => conflictPort = p;
     engine.ErrorOccurred += m => error = m;
 
     bool started = engine.Start(ip, listenPort);
-    if (!started && error is not null && error.Contains("already in use"))
-        Console.WriteLine("  PASS: clean 'port already in use' error raised");
+    if (!started && conflictPort == listenPort && error is null)
+        Console.WriteLine("  PASS: clean PortInUse signal raised (not a generic error)");
     else
     {
-        Console.WriteLine($"  FAIL: started={started}, error={error ?? "<none>"}");
+        Console.WriteLine($"  FAIL: started={started}, conflictPort={conflictPort}, error={error ?? "<none>"}");
         failures++;
     }
     engine.Stop();
 }
 
-// --- Test 3: AccessDenied (the VirtualTCU-on-5555 case) is reported clearly -------------
+// --- Test 3: AccessDenied (the VirtualTCU-on-5555 case) raises PortInUse, not a raw error ---
 // This is the bug found on Jake's machine: an exclusively-bound UDP port raises WSAEACCES,
 // not WSAEADDRINUSE. Reproduce by binding with ExclusiveAddressUse, then confirm the engine
-// still produces the friendly message rather than the cryptic OS one.
+// treats it as a clean PortInUse (so the UI shows the friendly localized message), not the
+// cryptic generic ErrorOccurred path.
 {
     Console.WriteLine("\n[Test 3] Port held EXCLUSIVELY (AccessDenied / WSAEACCES) — the VirtualTCU case");
 
@@ -118,18 +121,19 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     exclusive.Bind(new IPEndPoint(IPAddress.Parse(ip), listenPort));
 
     var engine = new SplitterEngine();
+    int conflictPort = -1;
     string? error = null;
+    engine.PortInUse += p => conflictPort = p;
     engine.ErrorOccurred += m => error = m;
 
     bool started = engine.Start(ip, listenPort);
-    bool friendly = error is not null && error.Contains("already in use by another app");
-    bool notCryptic = error is null || !error.Contains("forbidden by its access permissions");
+    bool clean = !started && conflictPort == listenPort && error is null;
 
-    if (!started && friendly && notCryptic)
-        Console.WriteLine("  PASS: exclusive-bind conflict shows the friendly message (no cryptic OS text)");
+    if (clean)
+        Console.WriteLine("  PASS: exclusive-bind conflict raises PortInUse (no cryptic generic error)");
     else
     {
-        Console.WriteLine($"  FAIL: started={started}, error={error ?? "<none>"}");
+        Console.WriteLine($"  FAIL: started={started}, conflictPort={conflictPort}, error={error ?? "<none>"}");
         failures++;
     }
     engine.Stop();
