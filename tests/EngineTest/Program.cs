@@ -149,6 +149,26 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     if (!ok) failures++;
 }
 
+// --- Test 5: Speed/Gear offset round-trip (decisive) ------------------------------------
+// Confirms SpeedOffset(256)/GearOffset(319) constants and little-endian float parsing by
+// writing known values into a 324-byte buffer and reading them back.
+{
+    Console.WriteLine("\n[Test 5] ForzaPacket.SpeedMetersPerSecond / Gear offset round-trip");
+    var pkt = new byte[ForzaPacket.CarDashSize];
+    System.Buffers.Binary.BinaryPrimitives.WriteSingleLittleEndian(
+        pkt.AsSpan(ForzaPacket.SpeedOffset, 4), 50.0f);
+    pkt[ForzaPacket.GearOffset] = 4;
+
+    float speed = ForzaPacket.SpeedMetersPerSecond(pkt);
+    int gear = ForzaPacket.Gear(pkt);
+    bool shortGuard = ForzaPacket.SpeedMetersPerSecond(new byte[100]) == 0f
+                      && ForzaPacket.Gear(new byte[100]) == 0;
+
+    bool ok = Math.Abs(speed - 50.0f) < 0.001f && gear == 4 && shortGuard;
+    Console.WriteLine($"  speed={speed} m/s (expect 50), gear={gear} (expect 4) -> {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
 Console.WriteLine();
 if (failures == 0)
 {

@@ -11,7 +11,9 @@ public readonly record struct EngineStatus(
     bool Running,
     bool Receiving,
     bool IsRaceOn,
-    int PacketsPerSecond);
+    int PacketsPerSecond,
+    int Gear,
+    float SpeedMps);
 
 /// <summary>
 /// The fan-out relay. Binds the UDP port Forza's "Data Out" targets, then resends every
@@ -35,6 +37,8 @@ public sealed class SplitterEngine
     // Status fields written on the rx thread, read by the UI timer.
     private long _lastPacketTicks;          // Stopwatch ticks of the last valid packet
     private volatile bool _lastIsRaceOn;
+    private int _lastGear;                  // latest parsed gear
+    private float _lastSpeedMps;            // latest parsed speed (m/s)
     private int _packetsThisSecond;         // accumulator
     private int _packetsPerSecond;          // last completed 1s window
     private long _windowStartTicks;
@@ -197,6 +201,8 @@ public sealed class SplitterEngine
             return; // ignore non-Forza traffic for status purposes
 
         _lastIsRaceOn = ForzaPacket.IsRaceOn(packet);
+        _lastGear = ForzaPacket.Gear(packet);
+        _lastSpeedMps = ForzaPacket.SpeedMetersPerSecond(packet);
         Volatile.Write(ref _lastPacketTicks, Stopwatch.GetTimestamp());
 
         _packetsThisSecond++;
@@ -230,6 +236,8 @@ public sealed class SplitterEngine
             Running: _running,
             Receiving: receiving,
             IsRaceOn: receiving && _lastIsRaceOn,
-            PacketsPerSecond: pps);
+            PacketsPerSecond: pps,
+            Gear: receiving ? _lastGear : 0,
+            SpeedMps: receiving ? _lastSpeedMps : 0f);
     }
 }

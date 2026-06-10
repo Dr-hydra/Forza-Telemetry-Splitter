@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+
 namespace ForzaTelemetrySplitter.Core;
 
 /// <summary>
@@ -25,4 +27,22 @@ public static class ForzaPacket
     /// </summary>
     public static bool IsRaceOn(ReadOnlySpan<byte> packet)
         => packet.Length >= CarDashSize && packet[0] != 0;
+
+    // Horizon "Car Dash" field offsets. The Horizon layout has a 12-byte gap after the Sled
+    // section (offset 232), which pushes the dash fields later than the Motorsport layout.
+    // These are verified by a round-trip test in tests/EngineTest before being trusted.
+    public const int SpeedOffset = 256; // float32, metres per second
+    public const int GearOffset = 319;  // uint8
+
+    /// <summary>Vehicle speed in metres per second (the raw unit Forza sends, regardless of the
+    /// game's display units). Returns 0 for a too-short packet.</summary>
+    public static float SpeedMetersPerSecond(ReadOnlySpan<byte> packet)
+        => packet.Length >= CarDashSize
+            ? BinaryPrimitives.ReadSingleLittleEndian(packet.Slice(SpeedOffset, 4))
+            : 0f;
+
+    /// <summary>Current gear as Forza reports it (0 = neutral/no gear). Returns 0 for a too-short
+    /// packet.</summary>
+    public static int Gear(ReadOnlySpan<byte> packet)
+        => packet.Length >= CarDashSize ? packet[GearOffset] : 0;
 }

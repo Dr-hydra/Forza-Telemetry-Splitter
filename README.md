@@ -18,7 +18,8 @@ Microsoft.
 | Feature | Description |
 |---------|-------------|
 | Fan-out | Splits FH6 "Car Dash" (324-byte) telemetry to any number of destinations, packets untouched. |
-| Status overlay | A small pill in the top-right shows "Connected" or "No data" while you drive. Toggle it from the tray. |
+| Status overlay | A small pill in the top-right shows "Connected" or "No data" while you drive, with a live gear and speed readout. Toggle it from the tray. |
+| Speed units | Shows mph or kph, defaulted from your Windows region and switchable in the app. |
 | Tool presets | Add destinations from a list of known telemetry tools (VirtualTCU, ForzaDash, SimHub, SIM Dashboard, co-driver) or a custom IP and port. |
 | Tray app | Runs quietly in the system tray, like VirtualTCU. |
 | No Administrator | Only does localhost UDP, so there's no UAC prompt. |
@@ -90,8 +91,9 @@ Calculator tuners such as ForzaTune do not read telemetry, so the splitter does 
 ## The overlay
 
 A small pill auto-positions in the top-right of the primary screen. Green means valid Forza packets are
-arriving; red means none are (you're in a menu, or Forza's Data Out isn't pointed at the splitter).
-Toggle it from the tray menu. It never steals focus from the game.
+arriving and shows your current gear and speed; red means none are (you're in a menu, or Forza's Data
+Out isn't pointed at the splitter). Speed shows in mph or kph (set in the app, defaulted from your
+Windows region). Toggle the overlay from the tray menu. It never steals focus from the game.
 
 Run Forza in Borderless or Windowed mode for the overlay to show over the game. True fullscreen can hide
 any overlay, which is a Windows limitation rather than something specific to this app.

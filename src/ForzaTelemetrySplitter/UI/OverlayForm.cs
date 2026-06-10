@@ -22,6 +22,7 @@ public sealed class OverlayForm : Form
     private const int Inset = 12; // px gap from the screen edges
 
     private bool _connected;
+    private string _readout = ""; // e.g. "Gear 4   112 mph" when connected
 
     public OverlayForm()
     {
@@ -30,7 +31,7 @@ public sealed class OverlayForm : Form
         TopMost = true;
         StartPosition = FormStartPosition.Manual;
         DoubleBuffered = true;
-        Size = new Size(132, 34);
+        Size = new Size(208, 34);
 
         // Rounded, semi-transparent dark pill.
         BackColor = Color.Black;
@@ -54,11 +55,15 @@ public sealed class OverlayForm : Form
     // Never take focus when shown.
     protected override bool ShowWithoutActivation => true;
 
-    /// <summary>Update the indicator. Cheap; called ~4x/sec from the UI timer.</summary>
-    public void SetConnected(bool connected)
+    /// <summary>
+    /// Update the indicator and live readout. Cheap; called ~4x/sec from the UI timer.
+    /// <paramref name="readout"/> (e.g. "Gear 4   112 mph") is shown only when connected.
+    /// </summary>
+    public void SetStatus(bool connected, string readout)
     {
-        if (_connected == connected) return;
+        if (_connected == connected && _readout == readout) return;
         _connected = connected;
+        _readout = readout;
         Invalidate();
     }
 
@@ -95,8 +100,10 @@ public sealed class OverlayForm : Form
             g.DrawEllipse(ring, Rectangle.Inflate(dotRect, 2, 2));
         }
 
-        // Label.
-        string label = _connected ? "Connected" : "No data";
+        // Label: live readout when connected, otherwise the plain status.
+        string label = _connected
+            ? (string.IsNullOrEmpty(_readout) ? "Connected" : _readout)
+            : "No data";
         using var text = new SolidBrush(Color.White);
         var textRect = new Rectangle(32, 0, Width - 36, Height);
         var fmt = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near };

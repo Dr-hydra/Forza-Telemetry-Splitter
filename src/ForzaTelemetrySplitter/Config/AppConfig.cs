@@ -31,6 +31,9 @@ public sealed class AppConfig
     /// </summary>
     public bool FirstRunComplete { get; set; }
 
+    /// <summary>Display unit for the live speed readout. Defaults from the Windows region.</summary>
+    public SpeedUnit SpeedUnit { get; set; } = SpeedUnitExtensions.FromRegion();
+
     public List<Destination> Destinations { get; set; } = new();
 
     /// <summary>

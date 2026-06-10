@@ -17,6 +17,7 @@ public sealed class MainForm : Form
     private readonly Button _startStop = new();
     private readonly Label _status = new();
     private readonly Label _listenInfo = new();
+    private readonly ComboBox _units = new();
     private readonly System.Windows.Forms.Timer _uiTimer = new();
 
     private readonly OverlayForm _overlay;
@@ -94,6 +95,19 @@ public sealed class MainForm : Form
         edit.Click += (_, _) => EditSelected();
         var remove = MakeButton("Remove", 180, by, AnchorStyles.Bottom | AnchorStyles.Left);
         remove.Click += (_, _) => RemoveSelected();
+
+        // Speed-unit toggle (Mph / Kph), persisted to config.
+        _units.DropDownStyle = ComboBoxStyle.DropDownList;
+        _units.Items.AddRange(new object[] { "mph", "kph" });
+        _units.SelectedIndex = _config.SpeedUnit == SpeedUnit.Kph ? 1 : 0;
+        _units.SetBounds(ClientSize.Width - 210, by + 2, 64, 24);
+        _units.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        _units.SelectedIndexChanged += (_, _) =>
+        {
+            _config.SpeedUnit = _units.SelectedIndex == 1 ? SpeedUnit.Kph : SpeedUnit.Mph;
+            ConfigStore.Save(_config);
+        };
+        Controls.Add(_units);
 
         _startStop.SetBounds(ClientSize.Width - 132, by, 120, 28);
         _startStop.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -250,17 +264,21 @@ public sealed class MainForm : Form
                 row.Cells["Count"].Value = Interlocked.Read(ref d.ForwardedCount);
         }
 
+        // Live gear + speed readout, shown when telemetry is flowing.
+        string readout = $"Gear {SpeedUnitExtensions.FormatGear(s.Gear)}   " +
+                         $"{SpeedUnitExtensions.FormatSpeed(s.SpeedMps, _config.SpeedUnit)}";
+
         string dot = s.Receiving ? "🟢" : (s.Running ? "🟡" : "⚪");
         string text;
         if (!s.Running)
             text = $"{dot}  Stopped";
         else if (s.Receiving)
-            text = $"{dot}  Forza connected — {s.PacketsPerSecond} pkts/s — Race {(s.IsRaceOn ? "ON" : "OFF")}";
+            text = $"{dot}  Forza connected — {s.PacketsPerSecond} pkts/s — Race {(s.IsRaceOn ? "ON" : "OFF")} — {readout}";
         else
             text = $"{dot}  Running — waiting for Forza (set Data Out → {_config.ListenIp}:{_config.ListenPort})";
         _status.Text = text;
 
-        _overlay.SetConnected(s.Receiving);
+        _overlay.SetStatus(s.Receiving, readout);
     }
 
     private void OnEngineError(string message)
