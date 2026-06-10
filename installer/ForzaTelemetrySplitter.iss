@@ -1,5 +1,5 @@
 ; Inno Setup script for Forza Telemetry Splitter
-; Produces a single ForzaTelemetrySplitterSetup.exe with shortcuts, an opt-in
+; Produces a single ForzaTelemetrySplitterInstaller.exe with shortcuts, an opt-in
 ; "start with Windows" choice, and a clean uninstaller. No auto-update by design.
 ;
 ; Build:  "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
@@ -33,7 +33,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=..\publish
-OutputBaseFilename=ForzaTelemetrySplitterSetup
+OutputBaseFilename=ForzaTelemetrySplitterInstaller
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern

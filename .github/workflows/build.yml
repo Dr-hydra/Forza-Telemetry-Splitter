@@ -7,6 +7,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# The release step needs write access to create/attach release assets. Without this the
+# GITHUB_TOKEN is read-only and "Attach to release" fails with "Resource not accessible by
+# integration". Only matters on tag pushes; harmless otherwise.
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -90,7 +96,7 @@ jobs:
           name: ForzaTelemetrySplitter
           path: |
             publish/ForzaTelemetrySplitter.exe
-            publish/ForzaTelemetrySplitterSetup.exe
+            publish/ForzaTelemetrySplitterInstaller.exe
 
       # On a version tag, attach both the portable exe and the installer to a GitHub Release.
       - name: Attach to release
@@ -99,4 +105,4 @@ jobs:
         with:
           files: |
             publish/ForzaTelemetrySplitter.exe
-            publish/ForzaTelemetrySplitterSetup.exe
+            publish/ForzaTelemetrySplitterInstaller.exe

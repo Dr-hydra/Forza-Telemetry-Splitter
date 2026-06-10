@@ -26,11 +26,29 @@ Microsoft.
 | No Administrator | Only does localhost UDP, so there's no UAC prompt. |
 | One installer | A small per-user installer, or a portable single .exe. No .NET runtime to install. |
 
+## Supported games
+
+The splitter works with any Forza game that has the "Data Out" telemetry feature. It detects which
+game you're running automatically from the telemetry format and shows the name in the app, so there's
+nothing to configure beyond pointing Data Out at the splitter.
+
+| Game | Telemetry format | Live gear/speed readout |
+|------|------------------|--------------------------|
+| Forza Horizon 6 | Car Dash | Yes |
+| Forza Horizon 5 | Car Dash | Yes |
+| Forza Horizon 4 | Car Dash | Yes |
+| Forza Motorsport (2023) | Dash | Yes |
+| Forza Motorsport 7 | Dash | Yes |
+
+Forwarding works for any of these regardless of format. The "Sled" telemetry format (used by some
+motion-platform setups) is forwarded too, but it carries no dashboard fields, so there's no gear/speed
+readout for it.
+
 ## Install
 
 Recommended — the installer:
 
-1. Download `ForzaTelemetrySplitterSetup.exe` from the [Releases](../../releases) page.
+1. Download `ForzaTelemetrySplitterInstaller.exe` from the [Releases](../../releases) page.
 2. Right-click it, choose Properties, tick Unblock at the bottom of the General tab, then OK. This
    avoids the "Windows protected your PC" screen. See [docs/SMARTSCREEN.md](docs/SMARTSCREEN.md) if you
    still see it.

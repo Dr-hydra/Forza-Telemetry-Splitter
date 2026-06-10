@@ -50,7 +50,7 @@ policy, and two artifact configurations.
 3. That's it. The next time CI runs, the gated steps detect the token and:
    - sign `ForzaTelemetrySplitter.exe`,
    - build the installer with `/DSign` so the installer and uninstaller are signed,
-   - sign `ForzaTelemetrySplitterSetup.exe`.
+   - sign `ForzaTelemetrySplitterInstaller.exe`.
 
 No certificate or token is ever committed to the repo — only the wiring that consumes the secrets.
 

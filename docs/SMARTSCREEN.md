@@ -12,7 +12,7 @@ Any of these work. The first is cleanest because it stops the warning from appea
    then OK. Now run it.
 2. Or, on the blue screen, click More info, then Run anyway.
 3. Optional: verify the download first. Compare the output of
-   `Get-FileHash .\ForzaTelemetrySplitterSetup.exe` with the SHA-256 listed in the release notes.
+   `Get-FileHash .\ForzaTelemetrySplitterInstaller.exe` with the SHA-256 listed in the release notes.
 
 ## Why it happens
 

@@ -26,7 +26,7 @@ After publishing:
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
 ```
 
-This produces `publish/ForzaTelemetrySplitterSetup.exe`.
+This produces `publish/ForzaTelemetrySplitterInstaller.exe`.
 
 ## Verify the engine (no game needed)
 
