@@ -34,61 +34,11 @@ jobs:
       - name: Publish single-file exe
         run: dotnet publish src/ForzaTelemetrySplitter -c Release -r win-x64 -o publish
 
-      # --- Code signing (optional, gated) -------------------------------------------------
-      # Signing only runs when the repo has a SignPath API token secret. Until then, every
-      # step below is skipped and the workflow stays green (forks/PRs included).
-      # See docs/CODE-SIGNING.md for how to enable it once SignPath approves the project.
-      - name: Detect signing availability
-        id: signing
-        shell: pwsh
+      - name: Build installer (Inno Setup)
         run: |
-          $enabled = -not [string]::IsNullOrEmpty($env:SIGNPATH_API_TOKEN)
-          "enabled=$($enabled.ToString().ToLower())" >> $env:GITHUB_OUTPUT
-        env:
-          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
-
-      - name: Sign the app exe (SignPath)
-        if: steps.signing.outputs.enabled == 'true'
-        uses: signpath/github-action-submit-signing-request@v1
-        with:
-          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
-          organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
-          project-slug: forza-telemetry-splitter
-          signing-policy-slug: release-signing
-          artifact-configuration-slug: app-exe
-          github-artifact-id: ${{ github.run_id }}
-          wait-for-completion: true
-          output-artifact-directory: publish
-
-      - name: Install Inno Setup
-        run: choco install innosetup --no-progress -y
+          choco install innosetup --no-progress -y
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
         shell: pwsh
-
-      # Build the installer. /DSign tells the .iss to sign the installer + uninstaller; only
-      # passed when signing is enabled (the exe it bundles is already signed at this point).
-      - name: Build installer (signed)
-        if: steps.signing.outputs.enabled == 'true'
-        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DSign installer\ForzaTelemetrySplitter.iss'
-        shell: pwsh
-
-      - name: Build installer (unsigned)
-        if: steps.signing.outputs.enabled != 'true'
-        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss'
-        shell: pwsh
-
-      - name: Sign the installer (SignPath)
-        if: steps.signing.outputs.enabled == 'true'
-        uses: signpath/github-action-submit-signing-request@v1
-        with:
-          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
-          organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
-          project-slug: forza-telemetry-splitter
-          signing-policy-slug: release-signing
-          artifact-configuration-slug: installer-exe
-          github-artifact-id: ${{ github.run_id }}
-          wait-for-completion: true
-          output-artifact-directory: publish
-      # ------------------------------------------------------------------------------------
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

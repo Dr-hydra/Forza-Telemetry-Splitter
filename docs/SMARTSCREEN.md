@@ -1,8 +1,8 @@
 # The Windows SmartScreen warning
 
-This app is open source and safe, but it's new and not yet code-signed, so Windows doesn't recognize it
-and may show "Windows protected your PC." This is normal for new independent apps — the warning fades as
-more people download it and Windows builds a reputation for the file.
+This app is open source and safe, but it's new, so Windows doesn't recognize it yet and may show
+"Windows protected your PC." This is normal for new independent apps — the warning fades as more people
+download it and Windows builds a reputation for the file.
 
 ## Run it anyway
 
@@ -17,8 +17,6 @@ Any of these work. The first is cleanest because it stops the warning from appea
 ## Why it happens
 
 Windows attaches a "downloaded from the internet" mark to files from a browser. SmartScreen checks that
-file against its reputation database; a brand-new, unsigned file has no reputation yet, so it warns.
-Unblocking removes the mark, which is why the warning then disappears.
-
-[Code signing](CODE-SIGNING.md) is planned, which will remove the "unknown publisher" line
-immediately. Full SmartScreen trust still builds with download volume even after signing.
+file against its reputation database; a brand-new file has no reputation yet, so it warns. Unblocking
+removes the mark, which is why the warning then disappears. As more people download a given release,
+Windows builds up its reputation and the warning fades on its own.
