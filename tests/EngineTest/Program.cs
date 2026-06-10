@@ -137,35 +137,101 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
 
 // --- Test 4: IsRaceOn parsing -----------------------------------------------------------
 {
-    Console.WriteLine("\n[Test 4] ForzaPacket.IsRaceOn / IsCarDash");
+    Console.WriteLine("\n[Test 4] ForzaPacket.IsRaceOn / IsValid");
     var on = new byte[ForzaPacket.CarDashSize]; on[0] = 1;
     var off = new byte[ForzaPacket.CarDashSize]; off[0] = 0;
     var wrongSize = new byte[100];
 
     bool ok = ForzaPacket.IsRaceOn(on) && !ForzaPacket.IsRaceOn(off)
-              && ForzaPacket.IsCarDash(324) && !ForzaPacket.IsCarDash(100)
+              && ForzaPacket.IsValid(324) && !ForzaPacket.IsValid(100)
               && !ForzaPacket.IsRaceOn(wrongSize);
     Console.WriteLine($"  {(ok ? "PASS" : "FAIL")}");
     if (!ok) failures++;
 }
 
-// --- Test 5: Speed/Gear offset round-trip (decisive) ------------------------------------
-// Confirms SpeedOffset(256)/GearOffset(319) constants and little-endian float parsing by
-// writing known values into a 324-byte buffer and reading them back.
+// --- Test 5: format detection by length -------------------------------------------------
 {
-    Console.WriteLine("\n[Test 5] ForzaPacket.SpeedMetersPerSecond / Gear offset round-trip");
-    var pkt = new byte[ForzaPacket.CarDashSize];
-    System.Buffers.Binary.BinaryPrimitives.WriteSingleLittleEndian(
-        pkt.AsSpan(ForzaPacket.SpeedOffset, 4), 50.0f);
-    pkt[ForzaPacket.GearOffset] = 4;
+    Console.WriteLine("\n[Test 5] ForzaPacket.Detect (game by packet size)");
+    bool ok = ForzaPacket.Detect(232) == ForzaFormat.Sled
+              && ForzaPacket.Detect(311) == ForzaFormat.MotorsportDash
+              && ForzaPacket.Detect(331) == ForzaFormat.MotorsportDash
+              && ForzaPacket.Detect(324) == ForzaFormat.HorizonCarDash
+              && ForzaPacket.Detect(323) == ForzaFormat.HorizonCarDash
+              && ForzaPacket.Detect(100) == ForzaFormat.Unknown;
+    Console.WriteLine($"  {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
 
-    float speed = ForzaPacket.SpeedMetersPerSecond(pkt);
-    int gear = ForzaPacket.Gear(pkt);
-    bool shortGuard = ForzaPacket.SpeedMetersPerSecond(new byte[100]) == 0f
-                      && ForzaPacket.Gear(new byte[100]) == 0;
+// --- Test 6: per-format Speed/Gear offset round-trip (decisive) -------------------------
+// Horizon: Speed@256, Gear@319.  Motorsport: Speed@244, Gear@307.
+{
+    Console.WriteLine("\n[Test 6] Speed/Gear offsets per format (round-trip)");
 
-    bool ok = Math.Abs(speed - 50.0f) < 0.001f && gear == 4 && shortGuard;
-    Console.WriteLine($"  speed={speed} m/s (expect 50), gear={gear} (expect 4) -> {(ok ? "PASS" : "FAIL")}");
+    var hzn = new byte[ForzaPacket.CarDashSize];
+    System.Buffers.Binary.BinaryPrimitives.WriteSingleLittleEndian(hzn.AsSpan(256, 4), 50.0f);
+    hzn[319] = 4;
+    var hznFmt = ForzaPacket.Detect(hzn.Length);
+    bool hznOk = hznFmt == ForzaFormat.HorizonCarDash
+                 && Math.Abs(ForzaPacket.SpeedMetersPerSecond(hzn, hznFmt) - 50f) < 0.001f
+                 && ForzaPacket.Gear(hzn, hznFmt) == 4;
+
+    var fm = new byte[ForzaPacket.MotorsportDashSize];
+    System.Buffers.Binary.BinaryPrimitives.WriteSingleLittleEndian(fm.AsSpan(244, 4), 72.0f);
+    fm[307] = 3;
+    var fmFmt = ForzaPacket.Detect(fm.Length);
+    bool fmOk = fmFmt == ForzaFormat.MotorsportDash
+                && Math.Abs(ForzaPacket.SpeedMetersPerSecond(fm, fmFmt) - 72f) < 0.001f
+                && ForzaPacket.Gear(fm, fmFmt) == 3;
+
+    // Sled has no dash data → readers return 0.
+    var sled = new byte[ForzaPacket.SledSize];
+    var sledFmt = ForzaPacket.Detect(sled.Length);
+    bool sledOk = sledFmt == ForzaFormat.Sled
+                  && ForzaPacket.SpeedMetersPerSecond(sled, sledFmt) == 0f
+                  && ForzaPacket.Gear(sled, sledFmt) == 0;
+
+    bool ok = hznOk && fmOk && sledOk;
+    Console.WriteLine($"  Horizon(256/319)={hznOk}  Motorsport(244/307)={fmOk}  Sled(none)={sledOk} -> {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
+// --- Test 7: forwarding is format-agnostic (Motorsport 311 + Sled 232) ------------------
+// The relay must forward ANY packet size byte-identical, not just Horizon 324.
+{
+    Console.WriteLine("\n[Test 7] Forwarding works for non-Horizon packet sizes (311, 232)");
+    const int fwdPort = 35777;
+    using var rx = new UdpClient(new IPEndPoint(IPAddress.Parse(ip), fwdPort));
+    rx.Client.ReceiveTimeout = 500;
+    int got311 = 0, got232 = 0;
+    var cts = new CancellationTokenSource();
+    var rxTask = Task.Run(() =>
+    {
+        while (!cts.IsCancellationRequested)
+        {
+            try
+            {
+                IPEndPoint? r = null;
+                var d = rx.Receive(ref r);
+                if (d.Length == 311) got311++;
+                else if (d.Length == 232) got232++;
+            }
+            catch (SocketException) { }
+        }
+    });
+
+    var engine = new SplitterEngine();
+    engine.SetDestinations(new[] { new Destination { Name = "x", Ip = ip, Port = fwdPort, Enabled = true } });
+    engine.Start(ip, listenPort);
+    using (var sender = new UdpClient())
+    {
+        var target = new IPEndPoint(IPAddress.Parse(ip), listenPort);
+        for (int i = 0; i < 30; i++) { sender.Send(new byte[311], 311, target); Thread.Sleep(4); }
+        for (int i = 0; i < 30; i++) { sender.Send(new byte[232], 232, target); Thread.Sleep(4); }
+    }
+    Thread.Sleep(300); cts.Cancel(); rxTask.Wait(1500); engine.Stop(); rx.Close();
+
+    bool ok = got311 >= 27 && got232 >= 27;
+    Console.WriteLine($"  forwarded 311-byte: {got311}/30, 232-byte: {got232}/30 -> {(ok ? "PASS" : "FAIL")}");
     if (!ok) failures++;
 }
 

@@ -41,7 +41,7 @@ public sealed class WelcomeForm : Form
         Controls.Add(intro);
         y += 48;
 
-        var stepHeading = new Label { Text = "In Forza Horizon 6:", AutoSize = true };
+        var stepHeading = new Label { Text = "In your Forza game (Horizon or Motorsport):", AutoSize = true };
         stepHeading.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
         stepHeading.SetBounds(x, y, w, 20);
         Controls.Add(stepHeading);
@@ -70,15 +70,15 @@ public sealed class WelcomeForm : Form
             "Data Out      :  ON\r\n" +
             "IP Address    :  127.0.0.1\r\n" +
             $"Port          :  {_config.ListenPort}\r\n" +
-            "Packet Format :  Car Dash";
+            "Packet Format :  Car Dash (Horizon) / Dash (Motorsport)";
         settings.SetBounds(x, y, w, 92);
         Controls.Add(settings);
         y += 102;
 
         var note = new Label
         {
-            Text = "Leave your other tools as they are — the splitter forwards to each on its " +
-                   "normal port (VirtualTCU stays on 5555).",
+            Text = "Your game is detected automatically. Leave your other tools as they are — the " +
+                   "splitter forwards to each on its normal port (VirtualTCU stays on 5555).",
             AutoSize = false,
             ForeColor = Color.DimGray,
         };

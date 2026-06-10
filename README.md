@@ -17,7 +17,8 @@ Microsoft.
 
 | Feature | Description |
 |---------|-------------|
-| Fan-out | Splits FH6 "Car Dash" (324-byte) telemetry to any number of destinations, packets untouched. |
+| Fan-out | Splits Forza telemetry to any number of destinations, packets untouched. |
+| Multi-game | Works with Forza Horizon 4/5/6 and Forza Motorsport (7, 2023). The game is auto-detected and named in the app. |
 | Status overlay | A small pill in the top-right shows "Connected" or "No data" while you drive, with a live gear and speed readout. Toggle it from the tray. |
 | Speed units | Shows mph or kph, defaulted from your Windows region and switchable in the app. |
 | Tool presets | Add destinations from a list of known telemetry tools (VirtualTCU, ForzaDash, SimHub, SIM Dashboard, co-driver) or a custom IP and port. |
@@ -48,11 +49,14 @@ The app starts splitting automatically; you only have to point Forza at it.
 
 1. Open the app from the tray. It listens on port 44405 and is already set to forward to VirtualTCU on
    its normal port 5555.
-2. In FH6, go to Settings, then HUD and Gameplay, then Data Out:
+2. In your Forza game, open Data Out (in Forza Horizon: Settings, then HUD and Gameplay, then Data
+   Out; Forza Motorsport has the same setting under gameplay/HUD options):
    - Data Out: ON
    - IP Address: 127.0.0.1
    - Port: 44405
-   - Packet Format: Car Dash
+   - Packet Format: Car Dash (Horizon) or Dash (Motorsport)
+
+   The splitter detects which Forza game you're running automatically and shows its name in the app.
 3. Leave your other tools as they are. The splitter forwards to each tool on the port it already uses,
    so there's nothing to reconfigure. To add another tool, click Add in the app, pick it from the
    preset list, and click OK.
@@ -120,4 +124,5 @@ on/off). Deleting it resets the app to defaults on next launch.
 
 ## Tested on
 
-Windows 10 and Windows 11, with Forza Horizon 6 ("Car Dash" 324-byte packets).
+Windows 10 and Windows 11. Forza Horizon 4/5/6 and Forza Motorsport (7, 2023) — auto-detected by
+packet format.

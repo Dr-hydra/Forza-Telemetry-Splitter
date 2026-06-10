@@ -273,7 +273,7 @@ public sealed class MainForm : Form
         if (!s.Running)
             text = $"{dot}  Stopped";
         else if (s.Receiving)
-            text = $"{dot}  Forza connected — {s.PacketsPerSecond} pkts/s — Race {(s.IsRaceOn ? "ON" : "OFF")} — {readout}";
+            text = $"{dot}  {ForzaPacket.GameName(s.Format)} connected — {s.PacketsPerSecond} pkts/s — Race {(s.IsRaceOn ? "ON" : "OFF")} — {readout}";
         else
             text = $"{dot}  Running — waiting for Forza (set Data Out → {_config.ListenIp}:{_config.ListenPort})";
         _status.Text = text;

@@ -22,8 +22,8 @@ The more of this you can give, the faster it gets fixed:
 
 ## Telemetry isn't reaching a tool? Try this first
 
-- Confirm Forza's Data Out is set to the splitter's port (44405 by default), IP 127.0.0.1, Packet
-  Format Car Dash.
+- Confirm your Forza game's Data Out is set to the splitter's port (44405 by default), IP 127.0.0.1,
+  Packet Format Car Dash (Horizon) or Dash (Motorsport). The app shows which game it detects.
 - Confirm the tool is listed and enabled as a destination, on the port that tool actually listens on.
 - The overlay should be green while you drive. Red means Forza isn't sending to the splitter.
 - Avoid Forza's reserved 5200–5300 port range for destinations.

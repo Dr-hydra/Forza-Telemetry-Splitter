@@ -13,7 +13,8 @@ public readonly record struct EngineStatus(
     bool IsRaceOn,
     int PacketsPerSecond,
     int Gear,
-    float SpeedMps);
+    float SpeedMps,
+    ForzaFormat Format);
 
 /// <summary>
 /// The fan-out relay. Binds the UDP port Forza's "Data Out" targets, then resends every
@@ -45,6 +46,7 @@ public sealed class SplitterEngine
     private volatile bool _lastIsRaceOn;
     private int _lastGear;                  // latest parsed gear
     private float _lastSpeedMps;            // latest parsed speed (m/s)
+    private volatile ForzaFormat _lastFormat = ForzaFormat.Unknown; // latest detected game/format
     private int _packetsThisSecond;         // accumulator
     private int _packetsPerSecond;          // last completed 1s window
     private long _windowStartTicks;
@@ -227,12 +229,14 @@ public sealed class SplitterEngine
 
     private void UpdateStatus(ReadOnlySpan<byte> packet)
     {
-        if (!ForzaPacket.IsCarDash(packet.Length))
-            return; // ignore non-Forza traffic for status purposes
+        var format = ForzaPacket.Detect(packet.Length);
+        if (format == ForzaFormat.Unknown)
+            return; // ignore non-Forza traffic for status purposes (forwarding still happened)
 
+        _lastFormat = format;
         _lastIsRaceOn = ForzaPacket.IsRaceOn(packet);
-        _lastGear = ForzaPacket.Gear(packet);
-        _lastSpeedMps = ForzaPacket.SpeedMetersPerSecond(packet);
+        _lastGear = ForzaPacket.Gear(packet, format);
+        _lastSpeedMps = ForzaPacket.SpeedMetersPerSecond(packet, format);
         Volatile.Write(ref _lastPacketTicks, Stopwatch.GetTimestamp());
 
         _packetsThisSecond++;
@@ -268,6 +272,7 @@ public sealed class SplitterEngine
             IsRaceOn: receiving && _lastIsRaceOn,
             PacketsPerSecond: pps,
             Gear: receiving ? _lastGear : 0,
-            SpeedMps: receiving ? _lastSpeedMps : 0f);
+            SpeedMps: receiving ? _lastSpeedMps : 0f,
+            Format: receiving ? _lastFormat : ForzaFormat.Unknown);
     }
 }
