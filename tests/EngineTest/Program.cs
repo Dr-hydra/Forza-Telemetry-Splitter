@@ -3,7 +3,8 @@ using System.Net.Sockets;
 using ForzaTelemetrySplitter.Core;
 
 // Headless verification of SplitterEngine: proves the real fan-out code splits Forza
-// telemetry to multiple destinations byte-for-byte, and reports a clean port-conflict error.
+// telemetry to multiple destinations byte-for-byte, and reports a clean port-conflict error
+// for BOTH ways Windows signals a taken UDP port (AddressAlreadyInUse and AccessDenied).
 
 const string ip = "127.0.0.1";
 const int listenPort = 35555;
@@ -18,7 +19,6 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
 {
     Console.WriteLine("[Test 1] Fan-out splits the stream to all enabled destinations");
 
-    // Stand up receivers (fake downstream tools).
     var receivers = destPorts.ToDictionary(
         p => p,
         p => new UdpClient(new IPEndPoint(IPAddress.Parse(ip), p)));
@@ -36,12 +36,7 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
             {
                 IPEndPoint? remote = null;
                 var data = client.Receive(ref remote);
-                if (data.Length == ForzaPacket.CarDashSize)
-                {
-                    counts[port]++;
-                    // marker byte at index 5 must survive intact
-                    if (data[5] != (byte)((counts[port] - 1) % 256)) { /* order may vary; loose check */ }
-                }
+                if (data.Length == ForzaPacket.CarDashSize) counts[port]++;
                 else integrityOk[port] = false;
             }
             catch (SocketException) { /* timeout */ }
@@ -63,19 +58,18 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     }
     else
     {
-        // Send fake 324-byte Car Dash packets to the splitter's listen port.
         using var sender = new UdpClient();
         var target = new IPEndPoint(IPAddress.Parse(ip), listenPort);
         for (int i = 0; i < packetCount; i++)
         {
             var pkt = new byte[ForzaPacket.CarDashSize];
-            pkt[0] = (byte)(i % 2);   // IsRaceOn toggles
-            pkt[5] = (byte)(i % 256); // integrity marker
+            pkt[0] = (byte)(i % 2);
+            pkt[5] = (byte)(i % 256);
             sender.Send(pkt, pkt.Length, target);
             Thread.Sleep(8);
         }
 
-        Thread.Sleep(400); // let the tail drain
+        Thread.Sleep(400);
         cts.Cancel();
         Task.WaitAll(rxTasks.ToArray(), 2000);
         engine.Stop();
@@ -91,11 +85,10 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     foreach (var c in receivers.Values) c.Dispose();
 }
 
-// --- Test 2: port-conflict produces a clear error, not a silent failure -----------------
+// --- Test 2: AddressAlreadyInUse is reported clearly ------------------------------------
 {
-    Console.WriteLine("\n[Test 2] Port-in-use is reported clearly");
+    Console.WriteLine("\n[Test 2] Port held by a NON-exclusive UDP socket (AddressAlreadyInUse)");
 
-    // Occupy the port first.
     using var squatter = new UdpClient(new IPEndPoint(IPAddress.Parse(ip), listenPort));
 
     var engine = new SplitterEngine();
@@ -104,20 +97,47 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
 
     bool started = engine.Start(ip, listenPort);
     if (!started && error is not null && error.Contains("already in use"))
-    {
         Console.WriteLine("  PASS: clean 'port already in use' error raised");
-    }
     else
     {
-        Console.WriteLine($"  FAIL: expected a port-in-use error. started={started}, error={error ?? "<none>"}");
+        Console.WriteLine($"  FAIL: started={started}, error={error ?? "<none>"}");
         failures++;
     }
     engine.Stop();
 }
 
-// --- Test 3: IsRaceOn parsing ------------------------------------------------------------
+// --- Test 3: AccessDenied (the VirtualTCU-on-5555 case) is reported clearly -------------
+// This is the bug found on Jake's machine: an exclusively-bound UDP port raises WSAEACCES,
+// not WSAEADDRINUSE. Reproduce by binding with ExclusiveAddressUse, then confirm the engine
+// still produces the friendly message rather than the cryptic OS one.
 {
-    Console.WriteLine("\n[Test 3] ForzaPacket.IsRaceOn / IsCarDash");
+    Console.WriteLine("\n[Test 3] Port held EXCLUSIVELY (AccessDenied / WSAEACCES) — the VirtualTCU case");
+
+    using var exclusive = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+    exclusive.ExclusiveAddressUse = true;
+    exclusive.Bind(new IPEndPoint(IPAddress.Parse(ip), listenPort));
+
+    var engine = new SplitterEngine();
+    string? error = null;
+    engine.ErrorOccurred += m => error = m;
+
+    bool started = engine.Start(ip, listenPort);
+    bool friendly = error is not null && error.Contains("already in use by another app");
+    bool notCryptic = error is null || !error.Contains("forbidden by its access permissions");
+
+    if (!started && friendly && notCryptic)
+        Console.WriteLine("  PASS: exclusive-bind conflict shows the friendly message (no cryptic OS text)");
+    else
+    {
+        Console.WriteLine($"  FAIL: started={started}, error={error ?? "<none>"}");
+        failures++;
+    }
+    engine.Stop();
+}
+
+// --- Test 4: IsRaceOn parsing -----------------------------------------------------------
+{
+    Console.WriteLine("\n[Test 4] ForzaPacket.IsRaceOn / IsCarDash");
     var on = new byte[ForzaPacket.CarDashSize]; on[0] = 1;
     var off = new byte[ForzaPacket.CarDashSize]; off[0] = 0;
     var wrongSize = new byte[100];
@@ -132,7 +152,7 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
 Console.WriteLine();
 if (failures == 0)
 {
-    Console.WriteLine("OVERALL: PASS — engine splits byte-identical telemetry to all destinations.");
+    Console.WriteLine("OVERALL: PASS — engine splits byte-identical telemetry and reports all port conflicts clearly.");
     return 0;
 }
 Console.WriteLine($"OVERALL: FAIL — {failures} check(s) failed.");

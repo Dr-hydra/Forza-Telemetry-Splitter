@@ -37,20 +37,28 @@ overhead, no data altered.
    `Settings → HUD and Gameplay → Data Out`
    - **Data Out:** ON
    - **IP Address:** `127.0.0.1`
-   - **Port:** `5555`
+   - **Port:** `44405`  ← the splitter's own port
    - **Packet Format:** Car Dash
-4. **Move your other tools off port 5555** so the splitter can own it, and add them as destinations:
-   - **VirtualTCU:** change its listen port from `5555` to `5556` (it's already a destination by default).
-   - Open the splitter (double-click the tray icon) → **Add** → pick your tuner from the preset list → set the port it listens on.
-5. Drive. The overlay turns **green** and each tool receives the stream simultaneously.
+4. **Leave your existing tools exactly as they are.** The splitter forwards to each tool's
+   normal default port — you don't reconfigure anything:
+   - **VirtualTCU** keeps its usual `5555` (it's enabled as a destination by default).
+   - To add another tool: open the splitter (double-click the tray icon) → **Add** → pick it from
+     the preset list (its default port is filled in) → done.
+5. Drive. The overlay turns **green** and every tool receives the stream simultaneously.
+
+> **Why a dedicated port?** Older guides told you to move VirtualTCU off 5555 so a splitter could
+> steal it — which breaks the moment VirtualTCU launches first. Instead, this splitter listens on
+> its **own** port (`44405`, used by no known Forza tool and outside Forza's reserved 5200–5300
+> range) and forwards *to* your tools on the ports they already use. Nothing to reconfigure, no
+> port fights.
 
 ### Default port map
 
 | What | IP | Port |
 |------|----|----|
-| **Forza Data Out → Splitter (listen)** | 127.0.0.1 | **5555** |
-| VirtualTCU (set its listen port to this) | 127.0.0.1 | 5556 |
-| Your tuner (example, disabled by default) | 127.0.0.1 | 5300 |
+| **Forza Data Out → Splitter (listen)** | 127.0.0.1 | **44405** |
+| → VirtualTCU (its normal port, unchanged) | 127.0.0.1 | 5555 |
+| → Your tuner (example, disabled by default) | 127.0.0.1 | 9999 |
 
 You can change any of these in the app.
 
@@ -60,12 +68,16 @@ You can change any of these in the app.
 
 Only tools that **read Forza's live UDP telemetry**. Examples:
 
-| Tool | Default port | Notes |
+The splitter forwards to each tool on **its own normal port** — you don't change the tool.
+
+| Tool | Its default port | Notes |
 |------|--------------|-------|
-| [VirtualTCU](https://github.com/Forza-Love/fh6-virtual_tcu) | 5555 → **5556** | Auto-shifting. Change its listen port so the splitter can own 5555. |
-| [co-driver](https://github.com/Ojansen/co-driver) | 5300 | Open-source (MIT) dyno + tune workbench + dashboard. |
-| [ai-tuner](https://github.com/diogojesusdev/ai-tuner) | (set in app) | AI race-engineer overlay with tuning suggestions. |
-| [fh6-tel](https://github.com/TheBanHammer/fh6-tel) | (set in app) | Telemetry dashboard + session recording. |
+| [VirtualTCU](https://github.com/Forza-Love/fh6-virtual_tcu) | 5555 | Auto-shifting. Unchanged — keep 5555. |
+| [ForzaDash](https://github.com/himanshupapola/ForzaDash) | 1234 | Open-source FH6 telemetry dashboard. |
+| [Forza-data-tools](https://github.com/richstokes/Forza-data-tools) | 9999 | Open-source CLI + browser dashboard. |
+| [SIM Dashboard](https://www.stryder-it.de/simdashboard/) | 5685 | Phone/tablet dashboard — use the device's IP. |
+| [SimHub](https://www.simhubdash.com/) | 20777 | Dashboard/effects suite. |
+| [co-driver](https://github.com/Ojansen/co-driver) | 5300 | MIT dyno + tune workbench. ⚠ 5300 edges Forza's reserved 5200–5300 range. |
 | [Tune It Yourself](https://www.tuneityourself.co.uk/) | over Wi-Fi | Live-telemetry auto-tuner (paid). Use the device's IP, not 127.0.0.1. |
 
 > **Calculator tuners don't need this.** Tools like ForzaTune that you type car stats into never read

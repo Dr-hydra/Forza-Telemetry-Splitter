@@ -13,20 +13,27 @@ public sealed record TunerPreset(string Name, int DefaultPort, string Note);
 /// </summary>
 public static class TunerPresets
 {
+    // Ports below are each tool's OWN existing default listen port — the splitter forwards to
+    // them as-is, so users don't reconfigure tools they already have working. (The splitter
+    // itself listens on its own dedicated port; see AppConfig.ListenPort.)
     public static readonly IReadOnlyList<TunerPreset> All = new[]
     {
-        new TunerPreset("VirtualTCU", 5556,
-            "Auto-shifting transmission controller. Default listen is 5555 — change it to 5556 so the splitter can own 5555."),
+        new TunerPreset("VirtualTCU", 5555,
+            "Auto-shifting transmission controller. Keep its normal listen port 5555 — no change needed."),
+        new TunerPreset("ForzaDash", 1234,
+            "Open-source FH6 telemetry dashboard. Listens on 1234 by default."),
+        new TunerPreset("Forza-data-tools", 9999,
+            "Open-source CLI/dashboard for Data Out. Listens on 9999 by default."),
+        new TunerPreset("SIM Dashboard", 5685,
+            "Phone/tablet dashboard. Listens on 5685 by default — use the device's IP, not 127.0.0.1, if it's another device."),
+        new TunerPreset("SimHub", 20777,
+            "Dashboard/effects suite. Uses 20777 by default for Forza."),
         new TunerPreset("co-driver", 5300,
-            "Open-source (MIT) dyno + tune workbench + dashboard. Listens on 5300 for Forza."),
-        new TunerPreset("ai-tuner", 5557,
-            "AI race-engineer overlay with live tuning suggestions. Confirm/adjust its listen port in the app."),
-        new TunerPreset("fh6-tel", 5558,
-            "Telemetry dashboard with session recording/replay. Confirm/adjust its listen port in the app."),
-        new TunerPreset("Tune It Yourself", 5559,
+            "Open-source (MIT) dyno + tune workbench. Note: 5300 is at the edge of Forza's reserved 5200–5300 range; confirm it works."),
+        new TunerPreset("Tune It Yourself", 5685,
             "Live-telemetry auto-tuner (paid). Often receives over Wi-Fi to a phone/tablet — use that device's IP instead of 127.0.0.1."),
-        new TunerPreset("Custom…", 5560,
-            "Any other tool. Enter its name, IP and listen port manually."),
+        new TunerPreset("Custom…", 9000,
+            "Any other tool. Enter its name, IP and the port IT listens on. Avoid Forza's reserved 5200–5300 range."),
     };
 
     /// <summary>The entry used for fully manual destinations.</summary>

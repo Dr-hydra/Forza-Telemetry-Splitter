@@ -88,15 +88,20 @@ public sealed class SplitterEngine
                 _rxThread.Start();
                 return true;
             }
-            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
+            catch (SocketException ex) when (
+                ex.SocketErrorCode == SocketError.AddressAlreadyInUse ||   // WSAEADDRINUSE (10048)
+                ex.SocketErrorCode == SocketError.AccessDenied)            // WSAEACCES   (10013)
             {
+                // Both codes mean "something else already owns this port". Windows reports an
+                // exclusively-bound UDP port (e.g. VirtualTCU on 5555) as AccessDenied, not
+                // AddressAlreadyInUse — so we must treat them the same.
                 _running = false;
                 ErrorOccurred?.Invoke(
-                    $"Port {listenPort} is already in use.\n\n" +
-                    "Another app is bound to it — most likely VirtualTCU still listening on " +
-                    $"{listenPort}, or a second copy of Forza Telemetry Splitter.\n\n" +
-                    "Fix: change VirtualTCU's listen port (e.g. to 5556) and add it as a destination, " +
-                    "or close the other splitter instance.");
+                    $"Port {listenPort} is already in use by another app.\n\n" +
+                    "Forza Telemetry Splitter needs its own free port to receive from Forza. " +
+                    "Another tool (or a second copy of the splitter) is holding this one.\n\n" +
+                    $"Fix: open the splitter and change its listen port to a free one, then set " +
+                    $"Forza's Data Out port to match. The default {listenPort} is normally free.");
                 return false;
             }
             catch (Exception ex)

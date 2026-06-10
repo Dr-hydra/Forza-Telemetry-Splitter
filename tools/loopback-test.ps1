@@ -7,8 +7,8 @@
 #         destinations 5556 + one more), then run:  pwsh tools/loopback-test.ps1
 
 param(
-    [int]    $ListenPort = 5555,
-    [int[]]  $DestPorts  = @(5556, 5300),
+    [int]    $ListenPort = 44405,          # splitter's own dedicated port
+    [int[]]  $DestPorts  = @(5555, 9999),  # VirtualTCU + a second tool (their normal ports)
     [int]    $Count      = 60,
     [string] $Ip         = "127.0.0.1"
 )
