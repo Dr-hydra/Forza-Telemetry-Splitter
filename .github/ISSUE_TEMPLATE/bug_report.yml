@@ -1,0 +1,54 @@
+name: Bug report
+description: Something isn't working
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Windows and app version
+      placeholder: "Windows 11, Forza Telemetry Splitter 0.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Your setup
+      description: Splitter listen port, destinations and their ports, and which other tools were running.
+      placeholder: "Listen 44405; destinations VirtualTCU 5555 (on), ForzaDash 1234 (on). VirtualTCU was running."
+    validations:
+      required: false
+  - type: dropdown
+    id: overlay
+    attributes:
+      label: Overlay state at the time
+      options:
+        - Green (Connected)
+        - Red (No data)
+        - Overlay was hidden
+        - Not sure
+    validations:
+      required: false
+  - type: textarea
+    id: error
+    attributes:
+      label: Error message (if any)
+      description: Copy the exact text of any error the app showed.
+    validations:
+      required: false

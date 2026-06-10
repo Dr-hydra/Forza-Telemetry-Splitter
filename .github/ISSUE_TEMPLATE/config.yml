@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or setup help
+    url: https://github.com/jakemismas/Forza-Telemetry-Splitter/discussions
+    about: For setup help and general questions, start a discussion.
