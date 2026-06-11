@@ -34,6 +34,13 @@ public sealed class SplitterEngine
     private Thread? _rxThread;
     private volatile bool _running;
 
+    // Remembered listen endpoint so the watchdog can rebind after an unexpected socket failure.
+    private string _listenIp = "127.0.0.1";
+    private int _listenPort;
+
+    // Session recorder (Part C). Null unless recording is active.
+    private SessionRecorder? _recorder;
+
     // Windows IOCTL to stop a UDP socket from surfacing ICMP "port unreachable" as a
     // connection-reset exception. Without this, forwarding to a local port that nothing is
     // listening on can poison the socket and break the relay.
@@ -84,34 +91,12 @@ public sealed class SplitterEngine
         {
             if (_running) return true;
 
+            _listenIp = listenIp;
+            _listenPort = listenPort;
+
             try
             {
-                if (!IPAddress.TryParse(listenIp, out var bindAddr))
-                    bindAddr = IPAddress.Loopback;
-
-                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                // Larger receive buffer so a brief UI hiccup never drops Forza packets.
-                socket.ReceiveBufferSize = 1 << 20; // 1 MB
-
-                // Stop a dead forwarding target from poisoning this socket. When we forward to a
-                // local port with nothing listening, Windows returns an ICMP "port unreachable"
-                // that, by default, makes the NEXT receive throw ConnectionReset (WSAECONNRESET).
-                // SIO_UDP_CONNRESET disables that so the receive loop is never disrupted by a tool
-                // that simply isn't running yet. (Best-effort: ignored on platforms without it.)
-                try { socket.IOControl(SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null); }
-                catch { /* not supported here; the separate send socket below still isolates us */ }
-
-                socket.Bind(new IPEndPoint(bindAddr, listenPort));
-
-                // Forward on a SEPARATE socket so a failing/“unreachable” send can never affect the
-                // socket we receive on, nor deliveries to other destinations.
-                var sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                sendSocket.SendBufferSize = 1 << 20;
-                try { sendSocket.IOControl(SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null); }
-                catch { /* best-effort */ }
-
-                _socket = socket;
-                _sendSocket = sendSocket;
+                (_socket, _sendSocket) = CreateBoundSockets(listenIp, listenPort);
                 _running = true;
                 _windowStartTicks = Stopwatch.GetTimestamp();
 
@@ -144,6 +129,35 @@ public sealed class SplitterEngine
         }
     }
 
+    /// <summary>
+    /// Create the bound receive socket and the dedicated send socket for a listen endpoint.
+    /// Throws SocketException on bind failure (caller decides how to surface it). Shared by
+    /// <see cref="Start"/> and the watchdog rebind.
+    /// </summary>
+    private static (Socket recv, Socket send) CreateBoundSockets(string listenIp, int listenPort)
+    {
+        if (!IPAddress.TryParse(listenIp, out var bindAddr))
+            bindAddr = IPAddress.Loopback;
+
+        var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        socket.ReceiveBufferSize = 1 << 20; // 1 MB, so a brief UI hiccup never drops Forza packets
+
+        // Stop a dead forwarding target from poisoning this socket. Forwarding to a local port with
+        // nothing listening yields an ICMP "port unreachable" that, by default, makes the NEXT receive
+        // throw ConnectionReset (WSAECONNRESET). SIO_UDP_CONNRESET disables that. (Best-effort.)
+        try { socket.IOControl(SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null); } catch { }
+
+        socket.Bind(new IPEndPoint(bindAddr, listenPort));
+
+        // Forward on a SEPARATE socket so a failing/"unreachable" send can never affect the receive
+        // socket or deliveries to other destinations.
+        var sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        sendSocket.SendBufferSize = 1 << 20;
+        try { sendSocket.IOControl(SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null); } catch { }
+
+        return (socket, sendSocket);
+    }
+
     /// <summary>Stop the loop and release the socket. Safe to call when already stopped.</summary>
     public void Stop()
     {
@@ -167,19 +181,55 @@ public sealed class SplitterEngine
         try { send?.Close(); } catch { /* ignore */ }
         try { rx?.Join(500); } catch { /* ignore */ }
 
+        StopRecording(); // close any open capture file
+
         _packetsPerSecond = 0;
         _packetsThisSecond = 0;
     }
 
+    /// <summary>True while a session is being captured to disk.</summary>
+    public bool IsRecording => _recorder is not null;
+
+    /// <summary>Begin recording received packets to <paramref name="path"/> (.fts). Returns false if
+    /// the file can't be created.</summary>
+    public bool StartRecording(string path)
+    {
+        lock (_gate)
+        {
+            _recorder?.Dispose();
+            try { _recorder = new SessionRecorder(path); return true; }
+            catch (Exception ex)
+            {
+                _recorder = null;
+                ErrorOccurred?.Invoke($"Could not start recording to {path}.\n\n{ex.Message}");
+                return false;
+            }
+        }
+    }
+
+    /// <summary>Stop recording and close the file. Safe to call when not recording.</summary>
+    public void StopRecording()
+    {
+        lock (_gate)
+        {
+            _recorder?.Dispose();
+            _recorder = null;
+        }
+    }
+
     private void ReceiveLoop()
     {
-        var buffer = new byte[2048]; // comfortably larger than the 324-byte Car Dash packet
-        var socket = _socket;
-        var sendSocket = _sendSocket;
-        if (socket is null || sendSocket is null) return;
+        // UDP max datagram, so a normal Receive can never throw MessageSize (which a malicious
+        // oversized packet would otherwise trigger). Forza packets are ≤331 bytes.
+        var buffer = new byte[65535];
+        int rebindFailures = 0;
 
         while (_running)
         {
+            var socket = _socket;
+            var sendSocket = _sendSocket;
+            if (socket is null || sendSocket is null) break;
+
             int received;
             try
             {
@@ -191,13 +241,21 @@ public sealed class SplitterEngine
             }
             catch (ObjectDisposedException)
             {
-                break; // expected on shutdown
+                if (!_running) break;
+                // Socket disposed unexpectedly while running — try to recover (watchdog).
+                if (TryRebind(ref rebindFailures)) continue; else break;
             }
             catch (SocketException ex)
             {
-                if (_running) ErrorOccurred?.Invoke($"Receive error: {ex.Message}");
-                break;
+                if (!_running) break;
+                // A single bad datagram (e.g. an oversized packet -> MessageSize, or a stray ICMP
+                // reset) must NOT stop the relay. Ignore transient per-packet errors and keep going.
+                if (IsTransientReceiveError(ex.SocketErrorCode)) continue;
+                // Anything else means the socket itself is likely dead — attempt a watchdog rebind.
+                if (TryRebind(ref rebindFailures)) continue; else break;
             }
+
+            rebindFailures = 0; // a successful receive resets the watchdog backoff
 
             // Forward first (latency-critical), account for status second.
             var span = new ReadOnlySpan<byte>(buffer, 0, received);
@@ -225,7 +283,69 @@ public sealed class SplitterEngine
                 }
             }
 
+            // Record AFTER forwarding so capturing can never delay live tools.
+            _recorder?.Write(buffer, received);
+
             UpdateStatus(span);
+        }
+    }
+
+    /// <summary>Per-packet errors that should be ignored so the receive loop survives.</summary>
+    private static bool IsTransientReceiveError(SocketError code) => code switch
+    {
+        SocketError.MessageSize => true,        // oversized datagram (the audit's DoS vector)
+        SocketError.ConnectionReset => true,    // stray ICMP port-unreachable (belt-and-braces)
+        SocketError.NetworkReset => true,
+        SocketError.Interrupted => true,
+        _ => false,
+    };
+
+    /// <summary>
+    /// Watchdog: the receive socket died unexpectedly while running. Close both sockets, back off
+    /// briefly, and rebind the listen endpoint. Returns true if the loop should continue, false to
+    /// give up (after surfacing the reason). Bounded so it never hot-spins.
+    /// </summary>
+    private bool TryRebind(ref int failures)
+    {
+        const int maxFailures = 10;
+
+        // Tear down the dead sockets.
+        try { _socket?.Close(); } catch { }
+        try { _sendSocket?.Close(); } catch { }
+        _socket = null;
+        _sendSocket = null;
+
+        if (!_running) return false;
+
+        failures++;
+        if (failures > maxFailures)
+        {
+            ErrorOccurred?.Invoke(
+                $"The splitter lost its connection on {_listenIp}:{_listenPort} and could not recover.");
+            _running = false;
+            return false;
+        }
+
+        Thread.Sleep(Math.Min(500 * failures, 3000)); // linear backoff, capped at 3s
+        if (!_running) return false;
+
+        try
+        {
+            (_socket, _sendSocket) = CreateBoundSockets(_listenIp, _listenPort);
+            return true;
+        }
+        catch (SocketException ex) when (
+            ex.SocketErrorCode == SocketError.AddressAlreadyInUse ||
+            ex.SocketErrorCode == SocketError.AccessDenied)
+        {
+            // Something else grabbed the port while we were down — report and stop.
+            PortInUse?.Invoke(_listenPort);
+            _running = false;
+            return false;
+        }
+        catch
+        {
+            return true; // transient bind failure; back off and retry on the next loop turn
         }
     }
 

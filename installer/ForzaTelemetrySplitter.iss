@@ -19,6 +19,9 @@
 #define MyAppVersion GetVersionNumbersString(AddBackslash(SourcePath) + AppExe)
 
 [Setup]
+; AppId is an OPAQUE, STABLE identifier Inno uses to detect prior installs for in-place upgrades.
+; The last segment isn't valid hex, but Inno treats the whole value as a string — it works. Do NOT
+; change it: a new AppId would make a new install no longer recognize/upgrade existing v0.x installs.
 AppId={{B7E4B2A1-9C3D-4E5F-8A21-FTS0SPLITTER01}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}

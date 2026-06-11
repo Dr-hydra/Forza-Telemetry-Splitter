@@ -65,6 +65,12 @@
   <data name="Col_Ip" xml:space="preserve"><value>IP</value></data>
   <data name="Col_Port" xml:space="preserve"><value>Port</value></data>
   <data name="Col_Forwarded" xml:space="preserve"><value>Weitergeleitet</value></data>
+  <data name="Main_StartWithWindows" xml:space="preserve"><value>Mit Windows starten</value></data>
+  <data name="Main_Record" xml:space="preserve"><value>Aufnehmen</value></data>
+  <data name="Main_StopRecording" xml:space="preserve"><value>Aufnahme stoppen</value></data>
+  <data name="Main_Recording" xml:space="preserve"><value>Aufnahme läuft…</value></data>
+  <data name="Record_SaveTitle" xml:space="preserve"><value>Telemetrie-Aufnahme speichern</value></data>
+  <data name="Record_Filter" xml:space="preserve"><value>Forza-Telemetrie-Aufnahme (*.fts)|*.fts</value></data>
 
   <data name="Status_Stopped" xml:space="preserve"><value>Gestoppt</value></data>
   <data name="Status_WaitingForForza" xml:space="preserve"><value>Läuft — warte auf Forza (Data Out auf {0}:{1} einstellen)</value></data>

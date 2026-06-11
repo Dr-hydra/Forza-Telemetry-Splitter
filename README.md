@@ -26,6 +26,8 @@ Microsoft.
 | Tool presets | Add destinations from a list of known telemetry tools (VirtualTCU, ForzaDash, SimHub, SIM Dashboard, co-driver) or a custom IP and port. |
 | Tray app | Runs quietly in the system tray, like VirtualTCU. |
 | No Administrator | Only does localhost UDP, so there's no UAC prompt. |
+| Start with Windows | An in-app toggle (works for the portable build too), plus the installer option. |
+| Session recording | Capture a live session to a .fts file for bug reports ("here's the exact stream that broke X"). |
 | One installer | A small per-user installer, or a portable single .exe. No .NET runtime to install. |
 
 ## Supported games
@@ -128,6 +130,13 @@ any overlay, which is a Windows limitation rather than something specific to thi
 There's no background auto-update. Use Check for updates in the tray menu to open the Releases page. If
 there's a newer version, download the new installer and run it — it upgrades in place, keeps a single
 entry in Add/Remove Programs, and preserves your settings.
+
+## Recording a session
+
+The "Record" button captures the live telemetry to a `.fts` file (a byte-exact copy of the packets,
+any Forza game). It's useful for bug reports — attach the file and the exact stream can be inspected.
+Recording writes only to the file you choose and is never uploaded. The file grows by a few MB per
+minute, so stop it when you're done.
 
 ## Settings file
 

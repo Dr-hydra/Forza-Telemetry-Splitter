@@ -239,6 +239,83 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     if (!ok) failures++;
 }
 
+// --- Test 8: oversized packet does NOT stop the relay (security fix / watchdog) ----------
+// Reproduces the audited DoS: a single >buffer datagram used to throw MessageSize and break the
+// loop. The relay must survive it and keep forwarding subsequent valid packets.
+{
+    Console.WriteLine("\n[Test 8] Oversized packet does not stop forwarding (DoS fix)");
+    const int fwdPort = 35888;
+    using var rx = new UdpClient(new IPEndPoint(IPAddress.Parse(ip), fwdPort));
+    rx.Client.ReceiveTimeout = 500;
+    int afterOversize = 0;
+    var cts = new CancellationTokenSource();
+    var rxTask = Task.Run(() =>
+    {
+        while (!cts.IsCancellationRequested)
+        {
+            try { IPEndPoint? r = null; var d = rx.Receive(ref r); if (d.Length == 324) afterOversize++; }
+            catch (SocketException) { }
+        }
+    });
+
+    var engine = new SplitterEngine();
+    engine.SetDestinations(new[] { new Destination { Name = "x", Ip = ip, Port = fwdPort, Enabled = true } });
+    engine.Start(ip, listenPort);
+    using (var sender = new UdpClient())
+    {
+        var target = new IPEndPoint(IPAddress.Parse(ip), listenPort);
+        sender.Send(new byte[9000], 9000, target);            // oversized "attack" packet
+        Thread.Sleep(50);
+        for (int i = 0; i < 30; i++) { sender.Send(new byte[324], 324, target); Thread.Sleep(5); } // valid stream after
+    }
+    Thread.Sleep(300); cts.Cancel(); rxTask.Wait(1500); engine.Stop(); rx.Close();
+
+    bool ok = afterOversize >= 27; // the relay kept forwarding after the oversized packet
+    Console.WriteLine($"  valid packets forwarded AFTER an oversized one: {afterOversize}/30 -> {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
+// --- Test 9: recording round-trip -------------------------------------------------------
+{
+    Console.WriteLine("\n[Test 9] Session recording writes a valid .fts with all packets");
+    string path = Path.Combine(Path.GetTempPath(), $"fts-test-{Guid.NewGuid():N}.fts");
+    try
+    {
+        const int recvPort = 35999;
+        var engine = new SplitterEngine();
+        engine.StartRecording(path);
+        engine.Start(ip, recvPort);
+        using (var sender = new UdpClient())
+        {
+            var target = new IPEndPoint(IPAddress.Parse(ip), recvPort);
+            for (int i = 0; i < 25; i++) { var p = new byte[324]; p[5] = (byte)i; sender.Send(p, 324, target); Thread.Sleep(5); }
+        }
+        Thread.Sleep(300);
+        engine.StopRecording();
+        engine.Stop();
+
+        // Parse the file: magic "FTS1", version 1, then N records of [int64][uint16][bytes].
+        using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+        using var br = new BinaryReader(fs);
+        var magic = br.ReadBytes(4);
+        int version = br.ReadInt32();
+        int count = 0; bool sizesOk = true;
+        while (fs.Position < fs.Length)
+        {
+            br.ReadInt64();                  // delta ticks
+            int len = br.ReadUInt16();
+            var bytes = br.ReadBytes(len);
+            if (bytes.Length != len || len != 324) sizesOk = false;
+            count++;
+        }
+        bool ok = System.Text.Encoding.ASCII.GetString(magic) == "FTS1" && version == 1
+                  && count >= 23 && sizesOk;
+        Console.WriteLine($"  magic/version ok, {count}/25 records, sizes ok={sizesOk} -> {(ok ? "PASS" : "FAIL")}");
+        if (!ok) failures++;
+    }
+    finally { try { File.Delete(path); } catch { } }
+}
+
 Console.WriteLine();
 if (failures == 0)
 {

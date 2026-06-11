@@ -18,10 +18,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Third-party actions are pinned to full commit SHAs (with the version in a comment) so a
+      # re-tagged/compromised action can't silently enter the release build.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: '10.0.x'
 
@@ -36,7 +38,7 @@ jobs:
 
       - name: Build installer (Inno Setup)
         run: |
-          choco install innosetup --no-progress -y
+          choco install innosetup --version=6.4.2 --no-progress -y
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\ForzaTelemetrySplitter.iss
         shell: pwsh
 
@@ -47,7 +49,7 @@ jobs:
         shell: pwsh
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ForzaTelemetrySplitter
           path: |
@@ -59,7 +61,7 @@ jobs:
       # push to main never touches releases.
       - name: Create release and attach assets
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           fail_on_unmatched_files: true
           files: |

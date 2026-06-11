@@ -15,6 +15,7 @@
     <Compile Include="..\..\src\ForzaTelemetrySplitter\Core\ForzaPacket.cs" />
     <Compile Include="..\..\src\ForzaTelemetrySplitter\Core\Destination.cs" />
     <Compile Include="..\..\src\ForzaTelemetrySplitter\Core\SplitterEngine.cs" />
+    <Compile Include="..\..\src\ForzaTelemetrySplitter\Core\SessionRecorder.cs" />
   </ItemGroup>
 
 </Project>

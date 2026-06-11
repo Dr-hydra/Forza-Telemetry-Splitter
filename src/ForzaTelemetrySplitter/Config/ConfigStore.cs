@@ -34,13 +34,26 @@ public static class ConfigStore
 
             var json = File.ReadAllText(ConfigPath);
             var cfg = JsonSerializer.Deserialize<AppConfig>(json, JsonOptions);
-            return cfg ?? AppConfig.CreateDefault();
+            if (cfg is null) return AppConfig.CreateDefault();
+            Sanitize(cfg);
+            return cfg;
         }
         catch
         {
             // A malformed config should never block launch — fall back to defaults.
             return AppConfig.CreateDefault();
         }
+    }
+
+    /// <summary>
+    /// Defensive clamping of values loaded from a (possibly hand-edited) config file, so an
+    /// out-of-range port can't reach the socket layer. Ports are clamped to 1–65535.
+    /// </summary>
+    private static void Sanitize(AppConfig cfg)
+    {
+        cfg.ListenPort = Math.Clamp(cfg.ListenPort, 1, 65535);
+        foreach (var d in cfg.Destinations)
+            d.Port = Math.Clamp(d.Port, 1, 65535);
     }
 
     public static void Save(AppConfig config)

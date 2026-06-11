@@ -44,6 +44,12 @@ public static class Strings
     public static string Col_Ip => Get(nameof(Col_Ip));
     public static string Col_Port => Get(nameof(Col_Port));
     public static string Col_Forwarded => Get(nameof(Col_Forwarded));
+    public static string Main_StartWithWindows => Get(nameof(Main_StartWithWindows));
+    public static string Main_Record => Get(nameof(Main_Record));
+    public static string Main_StopRecording => Get(nameof(Main_StopRecording));
+    public static string Main_Recording => Get(nameof(Main_Recording));
+    public static string Record_SaveTitle => Get(nameof(Record_SaveTitle));
+    public static string Record_Filter => Get(nameof(Record_Filter));
 
     // Status
     public static string Status_Stopped => Get(nameof(Status_Stopped));

@@ -19,3 +19,6 @@ Thumbs.db
 
 # Local Claude Code / editor config (not part of the project)
 .claude/
+
+# Telemetry session recordings (may contain a user's session data; never commit)
+*.fts

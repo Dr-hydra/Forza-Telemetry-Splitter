@@ -68,6 +68,27 @@ Console.WriteLine("\n[Test 3] Placeholder formatting works per culture");
     if (!eok) failures++;
 }
 
+Console.WriteLine("\n[Test 4] StartupRegistration enable/disable (HKCU Run)");
+{
+    bool wasEnabled = ForzaTelemetrySplitter.Config.StartupRegistration.IsEnabled();
+    try
+    {
+        ForzaTelemetrySplitter.Config.StartupRegistration.Enable();
+        bool nowOn = ForzaTelemetrySplitter.Config.StartupRegistration.IsEnabled();
+        ForzaTelemetrySplitter.Config.StartupRegistration.Disable();
+        bool nowOff = ForzaTelemetrySplitter.Config.StartupRegistration.IsEnabled();
+        bool ok = nowOn && !nowOff;
+        Console.WriteLine($"  Enable->{nowOn}, Disable->{!nowOff} -> {(ok ? "PASS" : "FAIL")}");
+        if (!ok) failures++;
+    }
+    finally
+    {
+        // Restore prior state so the test leaves no trace.
+        if (wasEnabled) ForzaTelemetrySplitter.Config.StartupRegistration.Enable();
+        else ForzaTelemetrySplitter.Config.StartupRegistration.Disable();
+    }
+}
+
 Console.WriteLine();
 if (failures == 0)
 {

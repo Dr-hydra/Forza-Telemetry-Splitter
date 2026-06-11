@@ -20,6 +20,8 @@ public sealed class MainForm : Form
     private readonly Label _listenInfo = new();
     private readonly ComboBox _units = new();
     private readonly ComboBox _language = new();
+    private readonly CheckBox _startWithWindows = new();
+    private readonly Button _record = new();
     private readonly System.Windows.Forms.Timer _uiTimer = new();
 
     // Index order of the language dropdown items.
@@ -54,8 +56,8 @@ public sealed class MainForm : Form
         _overlay = overlay;
 
         Text = Strings.Main_Title;
-        ClientSize = new Size(560, 380);
-        MinimumSize = new Size(480, 320);
+        ClientSize = new Size(560, 416);
+        MinimumSize = new Size(480, 360);
         StartPosition = FormStartPosition.CenterScreen;
         Font = new Font("Segoe UI", 9f);
 
@@ -134,6 +136,22 @@ public sealed class MainForm : Form
         _startStop.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
         _startStop.Click += (_, _) => ToggleRunning();
         Controls.Add(_startStop);
+
+        // Extra row above the buttons: "Start with Windows" (left) and Record (right).
+        int er = by - 32;
+        _startWithWindows.Text = Strings.Main_StartWithWindows;
+        _startWithWindows.AutoSize = true;
+        _startWithWindows.SetBounds(12, er + 4, 240, 22);
+        _startWithWindows.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        _startWithWindows.Checked = StartupRegistration.IsEnabled();
+        _startWithWindows.CheckedChanged += OnStartWithWindowsChanged;
+        Controls.Add(_startWithWindows);
+
+        _record.Text = Strings.Main_Record;
+        _record.SetBounds(ClientSize.Width - 132, er, 120, 26);
+        _record.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        _record.Click += (_, _) => ToggleRecording();
+        Controls.Add(_record);
 
         // Status strip
         _status.SetBounds(12, ClientSize.Height - 44, ClientSize.Width - 24, 32);
@@ -273,6 +291,44 @@ public sealed class MainForm : Form
         _startStop.Text = _engine.Running ? Strings.Tray_StopSplitting : Strings.Tray_StartSplitting;
     }
 
+    private void OnStartWithWindowsChanged(object? sender, EventArgs e)
+    {
+        bool ok = _startWithWindows.Checked ? StartupRegistration.Enable() : StartupRegistration.Disable();
+        if (!ok)
+        {
+            // Registry write failed — revert the checkbox to the real state without re-firing.
+            _startWithWindows.CheckedChanged -= OnStartWithWindowsChanged;
+            _startWithWindows.Checked = StartupRegistration.IsEnabled();
+            _startWithWindows.CheckedChanged += OnStartWithWindowsChanged;
+        }
+    }
+
+    private void ToggleRecording()
+    {
+        if (_engine.IsRecording)
+        {
+            _engine.StopRecording();
+        }
+        else
+        {
+            using var dlg = new SaveFileDialog
+            {
+                Title = Strings.Record_SaveTitle,
+                Filter = Strings.Record_Filter,
+                FileName = $"forza-session-{DateTime.Now:yyyyMMdd-HHmmss}.fts",
+            };
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+            _engine.StartRecording(dlg.FileName);
+        }
+        UpdateRecordButton();
+    }
+
+    private void UpdateRecordButton()
+    {
+        _record.Text = _engine.IsRecording ? Strings.Main_StopRecording : Strings.Main_Record;
+        _record.ForeColor = _engine.IsRecording ? Color.Firebrick : SystemColors.ControlText;
+    }
+
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         int idx = _language.SelectedIndex;
@@ -316,7 +372,9 @@ public sealed class MainForm : Form
                 readout);
         else
             text = $"{dot}  {Strings.Status_WaitingForForza(_config.ListenIp, _config.ListenPort)}";
+        if (_engine.IsRecording) text += $"   ⏺ {Strings.Main_Recording}";
         _status.Text = text;
+        UpdateRecordButton();
 
         _overlay.SetStatus(s.Receiving, readout);
     }
