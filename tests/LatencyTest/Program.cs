@@ -39,6 +39,9 @@ exitCode |= RunScenario("B. Critical destination AFTER a dead (non-listening) de
         new Destination { Name = "VTCU",     Ip = ip, Port = criticalPort, Enabled = true }, // after it
     });
 
+// Also verify the new recording path doesn't add latency to forwarding.
+exitCode |= RecordingLatency.Run();
+
 Console.WriteLine(exitCode == 0
     ? "\nOVERALL: PASS — added delay and worst-case jitter are within budget."
     : "\nOVERALL: CONCERN — see flagged scenario(s) above.");
