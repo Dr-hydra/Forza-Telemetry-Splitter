@@ -75,6 +75,20 @@
   <data name="Main_Recording" xml:space="preserve"><value>Recording…</value></data>
   <data name="Record_SaveTitle" xml:space="preserve"><value>Save telemetry recording</value></data>
   <data name="Record_Filter" xml:space="preserve"><value>Forza telemetry capture (*.fts)|*.fts</value></data>
+  <data name="Tab_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Tab_Activity" xml:space="preserve"><value>Activity</value></data>
+  <data name="Chart_Title" xml:space="preserve"><value>Packets / sec — last {0} min</value></data>
+  <data name="Chart_Unit" xml:space="preserve"><value>pkts/s</value></data>
+  <data name="Chart_Empty" xml:space="preserve"><value>No traffic yet. Start splitting and launch Forza — the graph fills as packets flow.</value></data>
+  <data name="Chart_Waiting" xml:space="preserve"><value>Waiting for Forza…</value></data>
+  <data name="Zoom_In" xml:space="preserve"><value>Zoom in</value></data>
+  <data name="Zoom_Out" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Dot_Forwarding" xml:space="preserve"><value>Forwarding</value></data>
+  <data name="Dot_Idle" xml:space="preserve"><value>Idle</value></data>
+  <data name="Dot_Disabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="Dot_Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Dot_Tooltip" xml:space="preserve"><value>Forwarding packets to {0}:{1}. UDP is one-way, so delivery to the receiving app cannot be confirmed.</value></data>
 
   <data name="Status_Stopped" xml:space="preserve"><value>Stopped</value></data>
   <data name="Status_WaitingForForza" xml:space="preserve"><value>Running — waiting for Forza (set Data Out → {0}:{1})</value></data>

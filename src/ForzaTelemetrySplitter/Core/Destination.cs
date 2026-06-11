@@ -19,6 +19,11 @@ public sealed class Destination
     [JsonIgnore]
     public long ForwardedCount;
 
+    /// <summary>True if the most recent send to this destination raised a socket error. Set on the
+    /// rx thread, read by the UI for the status dot. Not persisted.</summary>
+    [JsonIgnore]
+    public volatile bool LastSendFailed;
+
     /// <summary>
     /// Cached endpoint, rebuilt whenever Ip/Port change. Avoids re-parsing on the hot path.
     /// </summary>

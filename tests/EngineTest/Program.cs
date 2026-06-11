@@ -316,6 +316,58 @@ Console.WriteLine("=== Forza Telemetry Splitter — engine verification ===\n");
     finally { try { File.Delete(path); } catch { } }
 }
 
+// --- Test 10: ActivityHistory ring buffer ----------------------------------------------
+{
+    Console.WriteLine("\n[Test 10] ActivityHistory ring buffer (order, cap, NaN gaps)");
+    var h = new ActivityHistory(4);
+    h.Add(1); h.Add(2); h.Add(float.NaN); h.Add(4);  // exactly full
+    var dst = new float[4];
+    int n1 = h.Snapshot(dst);
+    bool order = n1 == 4 && dst[0] == 1 && dst[1] == 2 && float.IsNaN(dst[2]) && dst[3] == 4;
+
+    h.Add(5); // overwrites oldest (1) -> [2, NaN, 4, 5]
+    int n2 = h.Snapshot(dst);
+    bool capped = n2 == 4 && dst[0] == 2 && float.IsNaN(dst[1]) && dst[2] == 4 && dst[3] == 5;
+
+    bool ok = order && capped;
+    Console.WriteLine($"  order={order} capped/oldest-discarded={capped} -> {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
+// --- Test 11: destination status derivation ---------------------------------------------
+{
+    Console.WriteLine("\n[Test 11] DestinationStatusLogic.Derive");
+    bool ok =
+        DestinationStatusLogic.Derive(enabled: false, engineReceiving: true,  countIncreased: true,  lastSendFailed: false) == DestinationStatus.Disabled &&
+        DestinationStatusLogic.Derive(enabled: true,  engineReceiving: true,  countIncreased: true,  lastSendFailed: false) == DestinationStatus.Forwarding &&
+        DestinationStatusLogic.Derive(enabled: true,  engineReceiving: false, countIncreased: false, lastSendFailed: false) == DestinationStatus.Idle &&
+        DestinationStatusLogic.Derive(enabled: true,  engineReceiving: true,  countIncreased: false, lastSendFailed: false) == DestinationStatus.Idle &&
+        DestinationStatusLogic.Derive(enabled: true,  engineReceiving: true,  countIncreased: true,  lastSendFailed: true)  == DestinationStatus.Error;
+    Console.WriteLine($"  {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
+// --- Test 12: engine samples activity while running -------------------------------------
+{
+    Console.WriteLine("\n[Test 12] Engine populates ActivityHistory while running");
+    var engine = new SplitterEngine();
+    engine.Start(ip, 34777);
+    using (var sender = new UdpClient())
+    {
+        var target = new IPEndPoint(IPAddress.Parse(ip), 34777);
+        // Send for ~2.5s so at least two 1Hz samples land.
+        for (int i = 0; i < 150; i++) { sender.Send(new byte[324], 324, target); Thread.Sleep(16); }
+    }
+    var dst = new float[engine.History.Capacity];
+    int count = engine.History.Snapshot(dst);
+    engine.Stop();
+    bool anyNonZero = false;
+    for (int i = 0; i < count; i++) if (!float.IsNaN(dst[i]) && dst[i] > 0) anyNonZero = true;
+    bool ok = count >= 1 && anyNonZero;
+    Console.WriteLine($"  samples={count}, any>0={anyNonZero} -> {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
 Console.WriteLine();
 if (failures == 0)
 {

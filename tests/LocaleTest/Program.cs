@@ -41,6 +41,23 @@ Check("fr", mustDifferFromEnglish: true);
 Check("de", mustDifferFromEnglish: true);
 Check("es", mustDifferFromEnglish: true);
 
+Console.WriteLine("\n[Test 1b] New v0.6 strings load and differ per culture");
+{
+    bool ok = true;
+    foreach (var c in new[] { "ja", "fr", "de", "es" })
+    {
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(c);
+        string fwd = Strings.Dot_Forwarding;
+        string tab = Strings.Tab_Activity;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+        bool differs = fwd != Strings.Dot_Forwarding && tab != Strings.Tab_Activity
+                       && !string.IsNullOrWhiteSpace(fwd);
+        if (!differs) { ok = false; Console.WriteLine($"  {c}: Dot_Forwarding/Tab_Activity not localized"); }
+    }
+    Console.WriteLine($"  {(ok ? "PASS" : "FAIL")}");
+    if (!ok) failures++;
+}
+
 Console.WriteLine("\n[Test 2] Unsupported culture (it) falls back to English");
 {
     CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("it");

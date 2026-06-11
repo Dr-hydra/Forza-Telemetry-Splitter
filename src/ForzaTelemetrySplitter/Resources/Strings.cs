@@ -51,6 +51,26 @@ public static class Strings
     public static string Record_SaveTitle => Get(nameof(Record_SaveTitle));
     public static string Record_Filter => Get(nameof(Record_Filter));
 
+    // Tabs
+    public static string Tab_Status => Get(nameof(Tab_Status));
+    public static string Tab_Activity => Get(nameof(Tab_Activity));
+
+    // Activity chart
+    public static string Chart_Title(int minutes) => Format(nameof(Chart_Title), minutes);
+    public static string Chart_Unit => Get(nameof(Chart_Unit));
+    public static string Chart_Empty => Get(nameof(Chart_Empty));
+    public static string Chart_Waiting => Get(nameof(Chart_Waiting));
+    public static string Zoom_In => Get(nameof(Zoom_In));
+    public static string Zoom_Out => Get(nameof(Zoom_Out));
+
+    // Per-destination status dots
+    public static string Dot_Forwarding => Get(nameof(Dot_Forwarding));
+    public static string Dot_Idle => Get(nameof(Dot_Idle));
+    public static string Dot_Disabled => Get(nameof(Dot_Disabled));
+    public static string Dot_Error => Get(nameof(Dot_Error));
+    public static string Dot_Tooltip(string ip, int port) => Format(nameof(Dot_Tooltip), ip, port);
+    public static string Col_Status => Get(nameof(Col_Status));
+
     // Status
     public static string Status_Stopped => Get(nameof(Status_Stopped));
     public static string Status_WaitingForForza(string ip, int port) => Format(nameof(Status_WaitingForForza), ip, port);

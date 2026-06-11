@@ -71,6 +71,20 @@
   <data name="Main_Recording" xml:space="preserve"><value>Enregistrement…</value></data>
   <data name="Record_SaveTitle" xml:space="preserve"><value>Enregistrer la capture de télémétrie</value></data>
   <data name="Record_Filter" xml:space="preserve"><value>Capture de télémétrie Forza (*.fts)|*.fts</value></data>
+  <data name="Tab_Status" xml:space="preserve"><value>État</value></data>
+  <data name="Tab_Activity" xml:space="preserve"><value>Activité</value></data>
+  <data name="Chart_Title" xml:space="preserve"><value>Paquets / s — {0} dernières min</value></data>
+  <data name="Chart_Unit" xml:space="preserve"><value>paq./s</value></data>
+  <data name="Chart_Empty" xml:space="preserve"><value>Aucun trafic pour l'instant. Démarrez la répartition et lancez Forza — le graphique se remplit au fil des paquets.</value></data>
+  <data name="Chart_Waiting" xml:space="preserve"><value>En attente de Forza…</value></data>
+  <data name="Zoom_In" xml:space="preserve"><value>Zoom avant</value></data>
+  <data name="Zoom_Out" xml:space="preserve"><value>Zoom arrière</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>État</value></data>
+  <data name="Dot_Forwarding" xml:space="preserve"><value>Transfert</value></data>
+  <data name="Dot_Idle" xml:space="preserve"><value>Inactif</value></data>
+  <data name="Dot_Disabled" xml:space="preserve"><value>Désactivé</value></data>
+  <data name="Dot_Error" xml:space="preserve"><value>Erreur</value></data>
+  <data name="Dot_Tooltip" xml:space="preserve"><value>Transfert des paquets vers {0}:{1}. L'UDP est unidirectionnel : la réception par l'application cible ne peut pas être confirmée.</value></data>
 
   <data name="Status_Stopped" xml:space="preserve"><value>Arrêté</value></data>
   <data name="Status_WaitingForForza" xml:space="preserve"><value>En cours — en attente de Forza (réglez Data Out sur {0}:{1})</value></data>

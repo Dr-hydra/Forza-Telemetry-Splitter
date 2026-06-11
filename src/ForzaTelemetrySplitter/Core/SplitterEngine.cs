@@ -41,6 +41,14 @@ public sealed class SplitterEngine
     // Session recorder (Part C). Null unless recording is active.
     private SessionRecorder? _recorder;
 
+    // Rolling 1 Hz packets/sec history for the Activity graph. Sampled inline on the rx thread when a
+    // 1-second window rolls over (see UpdateStatus) — no separate timer, so it adds zero jitter to
+    // forwarding. Idle/stopped seconds don't advance, which the chart renders as a gap.
+    private readonly ActivityHistory _history = new();
+
+    /// <summary>Rolling last-hour packets/sec history (in memory only; never persisted).</summary>
+    public ActivityHistory History => _history;
+
     // Windows IOCTL to stop a UDP socket from surfacing ICMP "port unreachable" as a
     // connection-reset exception. Without this, forwarding to a local port that nothing is
     // listening on can poison the socket and break the relay.
@@ -273,6 +281,7 @@ public sealed class SplitterEngine
                 {
                     sendSocket.SendTo(buffer, 0, received, SocketFlags.None, ep);
                     Interlocked.Increment(ref d.ForwardedCount);
+                    if (d.LastSendFailed) d.LastSendFailed = false;
                 }
                 catch (SocketException)
                 {
@@ -280,6 +289,7 @@ public sealed class SplitterEngine
                     // on localhost. Ignore — it will start receiving once it binds its port.
                     // Forwarding happens on a dedicated send socket, so this never affects the
                     // receive socket or deliveries to other destinations.
+                    d.LastSendFailed = true;
                 }
             }
 
@@ -368,6 +378,10 @@ public sealed class SplitterEngine
             _packetsPerSecond = _packetsThisSecond;
             _packetsThisSecond = 0;
             _windowStartTicks = now;
+            // Sample activity inline on the rx thread (off the forward path, which already happened).
+            // No extra timer thread = no added jitter to forwarding. Idle/stopped seconds simply don't
+            // advance the history, which the chart renders as a gap rather than a fake zero.
+            _history.Add(_packetsPerSecond);
         }
     }
 
@@ -397,4 +411,5 @@ public sealed class SplitterEngine
             SpeedMps: receiving ? _lastSpeedMps : 0f,
             Format: receiving ? _lastFormat : ForzaFormat.Unknown);
     }
+
 }

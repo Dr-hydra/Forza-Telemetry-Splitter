@@ -71,6 +71,20 @@
   <data name="Main_Recording" xml:space="preserve"><value>録画中…</value></data>
   <data name="Record_SaveTitle" xml:space="preserve"><value>テレメトリの録画を保存</value></data>
   <data name="Record_Filter" xml:space="preserve"><value>Forza テレメトリ キャプチャ (*.fts)|*.fts</value></data>
+  <data name="Tab_Status" xml:space="preserve"><value>ステータス</value></data>
+  <data name="Tab_Activity" xml:space="preserve"><value>アクティビティ</value></data>
+  <data name="Chart_Title" xml:space="preserve"><value>パケット/秒 — 直近 {0} 分</value></data>
+  <data name="Chart_Unit" xml:space="preserve"><value>パケット/秒</value></data>
+  <data name="Chart_Empty" xml:space="preserve"><value>まだトラフィックがありません。分配を開始して Forza を起動すると、グラフが埋まっていきます。</value></data>
+  <data name="Chart_Waiting" xml:space="preserve"><value>Forza を待機中…</value></data>
+  <data name="Zoom_In" xml:space="preserve"><value>拡大</value></data>
+  <data name="Zoom_Out" xml:space="preserve"><value>縮小</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>状態</value></data>
+  <data name="Dot_Forwarding" xml:space="preserve"><value>転送中</value></data>
+  <data name="Dot_Idle" xml:space="preserve"><value>待機</value></data>
+  <data name="Dot_Disabled" xml:space="preserve"><value>無効</value></data>
+  <data name="Dot_Error" xml:space="preserve"><value>エラー</value></data>
+  <data name="Dot_Tooltip" xml:space="preserve"><value>{0}:{1} へパケットを転送中です。UDP は一方向のため、受信側アプリへの到達は確認できません。</value></data>
 
   <data name="Status_Stopped" xml:space="preserve"><value>停止中</value></data>
   <data name="Status_WaitingForForza" xml:space="preserve"><value>実行中 — Forza を待機中（Data Out を {0}:{1} に設定）</value></data>

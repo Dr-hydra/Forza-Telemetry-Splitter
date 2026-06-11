@@ -71,6 +71,20 @@
   <data name="Main_Recording" xml:space="preserve"><value>Aufnahme läuft…</value></data>
   <data name="Record_SaveTitle" xml:space="preserve"><value>Telemetrie-Aufnahme speichern</value></data>
   <data name="Record_Filter" xml:space="preserve"><value>Forza-Telemetrie-Aufnahme (*.fts)|*.fts</value></data>
+  <data name="Tab_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Tab_Activity" xml:space="preserve"><value>Aktivität</value></data>
+  <data name="Chart_Title" xml:space="preserve"><value>Pakete / s — letzte {0} Min.</value></data>
+  <data name="Chart_Unit" xml:space="preserve"><value>Pakete/s</value></data>
+  <data name="Chart_Empty" xml:space="preserve"><value>Noch kein Datenverkehr. Starte die Verteilung und Forza — der Graph füllt sich, sobald Pakete fließen.</value></data>
+  <data name="Chart_Waiting" xml:space="preserve"><value>Warte auf Forza…</value></data>
+  <data name="Zoom_In" xml:space="preserve"><value>Vergrößern</value></data>
+  <data name="Zoom_Out" xml:space="preserve"><value>Verkleinern</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Dot_Forwarding" xml:space="preserve"><value>Weiterleitung</value></data>
+  <data name="Dot_Idle" xml:space="preserve"><value>Leerlauf</value></data>
+  <data name="Dot_Disabled" xml:space="preserve"><value>Deaktiviert</value></data>
+  <data name="Dot_Error" xml:space="preserve"><value>Fehler</value></data>
+  <data name="Dot_Tooltip" xml:space="preserve"><value>Pakete werden an {0}:{1} weitergeleitet. UDP ist einseitig — die Zustellung an die Empfänger-App kann nicht bestätigt werden.</value></data>
 
   <data name="Status_Stopped" xml:space="preserve"><value>Gestoppt</value></data>
   <data name="Status_WaitingForForza" xml:space="preserve"><value>Läuft — warte auf Forza (Data Out auf {0}:{1} einstellen)</value></data>

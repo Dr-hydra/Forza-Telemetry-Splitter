@@ -71,6 +71,20 @@
   <data name="Main_Recording" xml:space="preserve"><value>Grabando…</value></data>
   <data name="Record_SaveTitle" xml:space="preserve"><value>Guardar grabación de telemetría</value></data>
   <data name="Record_Filter" xml:space="preserve"><value>Captura de telemetría de Forza (*.fts)|*.fts</value></data>
+  <data name="Tab_Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="Tab_Activity" xml:space="preserve"><value>Actividad</value></data>
+  <data name="Chart_Title" xml:space="preserve"><value>Paquetes / s — últimos {0} min</value></data>
+  <data name="Chart_Unit" xml:space="preserve"><value>paq./s</value></data>
+  <data name="Chart_Empty" xml:space="preserve"><value>Aún no hay tráfico. Inicia la distribución y abre Forza: el gráfico se llena a medida que fluyen los paquetes.</value></data>
+  <data name="Chart_Waiting" xml:space="preserve"><value>Esperando a Forza…</value></data>
+  <data name="Zoom_In" xml:space="preserve"><value>Acercar</value></data>
+  <data name="Zoom_Out" xml:space="preserve"><value>Alejar</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="Dot_Forwarding" xml:space="preserve"><value>Reenviando</value></data>
+  <data name="Dot_Idle" xml:space="preserve"><value>Inactivo</value></data>
+  <data name="Dot_Disabled" xml:space="preserve"><value>Desactivado</value></data>
+  <data name="Dot_Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Dot_Tooltip" xml:space="preserve"><value>Reenviando paquetes a {0}:{1}. UDP es unidireccional, por lo que no se puede confirmar la entrega a la app receptora.</value></data>
 
   <data name="Status_Stopped" xml:space="preserve"><value>Detenido</value></data>
   <data name="Status_WaitingForForza" xml:space="preserve"><value>En ejecución — esperando a Forza (configura Data Out en {0}:{1})</value></data>
