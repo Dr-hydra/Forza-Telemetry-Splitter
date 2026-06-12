@@ -54,6 +54,28 @@ public static class Strings
     // Tabs
     public static string Tab_Status => Get(nameof(Tab_Status));
     public static string Tab_Activity => Get(nameof(Tab_Activity));
+    public static string Tab_Overlay => Get(nameof(Tab_Overlay));
+
+    // Main window
+    public static string Main_BackgroundNote => Get(nameof(Main_BackgroundNote));
+
+    // Logging (Activity tab)
+    public static string Log_Start => Get(nameof(Log_Start));
+    public static string Log_Stop => Get(nameof(Log_Stop));
+    public static string Log_ChangeFolder => Get(nameof(Log_ChangeFolder));
+    public static string Log_OpenFolder => Get(nameof(Log_OpenFolder));
+    public static string Log_Recording => Get(nameof(Log_Recording));
+    public static string Log_FolderLabel(string path) => Format(nameof(Log_FolderLabel), path);
+
+    // Overlay settings tab
+    public static string Ov_Show => Get(nameof(Ov_Show));
+    public static string Ov_TransparentBg => Get(nameof(Ov_TransparentBg));
+    public static string Ov_TextColor => Get(nameof(Ov_TextColor));
+    public static string Ov_BgColor => Get(nameof(Ov_BgColor));
+    public static string Ov_Opacity => Get(nameof(Ov_Opacity));
+    public static string Ov_Move => Get(nameof(Ov_Move));
+    public static string Ov_DoneMoving => Get(nameof(Ov_DoneMoving));
+    public static string Ov_MoveHint => Get(nameof(Ov_MoveHint));
 
     // Activity chart
     public static string Chart_Title(int minutes) => Format(nameof(Chart_Title), minutes);

@@ -73,6 +73,22 @@
   <data name="Record_Filter" xml:space="preserve"><value>Captura de telemetría de Forza (*.fts)|*.fts</value></data>
   <data name="Tab_Status" xml:space="preserve"><value>Estado</value></data>
   <data name="Tab_Activity" xml:space="preserve"><value>Actividad</value></data>
+  <data name="Tab_Overlay" xml:space="preserve"><value>Superposición</value></data>
+  <data name="Main_BackgroundNote" xml:space="preserve"><value>Puedes cerrar esta ventana, la herramienta seguirá abierta en segundo plano.</value></data>
+  <data name="Log_Start" xml:space="preserve"><value>Iniciar registro</value></data>
+  <data name="Log_Stop" xml:space="preserve"><value>Detener registro</value></data>
+  <data name="Log_ChangeFolder" xml:space="preserve"><value>Cambiar carpeta…</value></data>
+  <data name="Log_OpenFolder" xml:space="preserve"><value>Abrir carpeta de registros</value></data>
+  <data name="Log_Recording" xml:space="preserve"><value>Grabando…</value></data>
+  <data name="Log_FolderLabel" xml:space="preserve"><value>Registros: {0}</value></data>
+  <data name="Ov_Show" xml:space="preserve"><value>Mostrar superposición</value></data>
+  <data name="Ov_TransparentBg" xml:space="preserve"><value>Fondo transparente</value></data>
+  <data name="Ov_TextColor" xml:space="preserve"><value>Color del texto…</value></data>
+  <data name="Ov_BgColor" xml:space="preserve"><value>Color de fondo…</value></data>
+  <data name="Ov_Opacity" xml:space="preserve"><value>Opacidad del fondo</value></data>
+  <data name="Ov_Move" xml:space="preserve"><value>Mover superposición</value></data>
+  <data name="Ov_DoneMoving" xml:space="preserve"><value>Listo</value></data>
+  <data name="Ov_MoveHint" xml:space="preserve"><value>Arrastra la superposición para colocarla y luego pulsa Listo.</value></data>
   <data name="Chart_Title" xml:space="preserve"><value>Paquetes / s — últimos {0} min</value></data>
   <data name="Chart_Unit" xml:space="preserve"><value>paq./s</value></data>
   <data name="Chart_Empty" xml:space="preserve"><value>Aún no hay tráfico. Inicia la distribución y abre Forza: el gráfico se llena a medida que fluyen los paquetes.</value></data>
@@ -86,9 +102,9 @@
   <data name="Dot_Error" xml:space="preserve"><value>Error</value></data>
   <data name="Dot_Tooltip" xml:space="preserve"><value>Reenviando paquetes a {0}:{1}. UDP es unidireccional, por lo que no se puede confirmar la entrega a la app receptora.</value></data>
 
-  <data name="Status_Stopped" xml:space="preserve"><value>Detenido</value></data>
-  <data name="Status_WaitingForForza" xml:space="preserve"><value>En ejecución — esperando a Forza (configura Data Out en {0}:{1})</value></data>
-  <data name="Status_Connected" xml:space="preserve"><value>{0} conectado — {1} paquetes/s — Carrera {2} — {3}</value></data>
+  <data name="Status_Stopped" xml:space="preserve"><value>Detenido — sin recibir telemetría</value></data>
+  <data name="Status_WaitingForForza" xml:space="preserve"><value>En ejecución — esperando la telemetría de Forza (configura Data Out en {0}:{1})</value></data>
+  <data name="Status_Connected" xml:space="preserve"><value>Recibiendo de {0} — {1} paquetes/s — Carrera {2} — {3}</value></data>
   <data name="Status_RaceOn" xml:space="preserve"><value>SÍ</value></data>
   <data name="Status_RaceOff" xml:space="preserve"><value>NO</value></data>
   <data name="Readout_Gear" xml:space="preserve"><value>Marcha {0}   {1}</value></data>

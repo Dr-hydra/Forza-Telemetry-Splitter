@@ -73,6 +73,22 @@
   <data name="Record_Filter" xml:space="preserve"><value>Forza-Telemetrie-Aufnahme (*.fts)|*.fts</value></data>
   <data name="Tab_Status" xml:space="preserve"><value>Status</value></data>
   <data name="Tab_Activity" xml:space="preserve"><value>Aktivität</value></data>
+  <data name="Tab_Overlay" xml:space="preserve"><value>Overlay</value></data>
+  <data name="Main_BackgroundNote" xml:space="preserve"><value>Du kannst dieses Fenster schließen – das Tool läuft im Hintergrund weiter.</value></data>
+  <data name="Log_Start" xml:space="preserve"><value>Aufzeichnung starten</value></data>
+  <data name="Log_Stop" xml:space="preserve"><value>Aufzeichnung stoppen</value></data>
+  <data name="Log_ChangeFolder" xml:space="preserve"><value>Ordner ändern…</value></data>
+  <data name="Log_OpenFolder" xml:space="preserve"><value>Log-Ordner öffnen</value></data>
+  <data name="Log_Recording" xml:space="preserve"><value>Zeichnet auf…</value></data>
+  <data name="Log_FolderLabel" xml:space="preserve"><value>Logs: {0}</value></data>
+  <data name="Ov_Show" xml:space="preserve"><value>Overlay anzeigen</value></data>
+  <data name="Ov_TransparentBg" xml:space="preserve"><value>Transparenter Hintergrund</value></data>
+  <data name="Ov_TextColor" xml:space="preserve"><value>Textfarbe…</value></data>
+  <data name="Ov_BgColor" xml:space="preserve"><value>Hintergrundfarbe…</value></data>
+  <data name="Ov_Opacity" xml:space="preserve"><value>Hintergrund-Deckkraft</value></data>
+  <data name="Ov_Move" xml:space="preserve"><value>Overlay verschieben</value></data>
+  <data name="Ov_DoneMoving" xml:space="preserve"><value>Fertig</value></data>
+  <data name="Ov_MoveHint" xml:space="preserve"><value>Ziehe das Overlay an die gewünschte Position und klicke dann auf Fertig.</value></data>
   <data name="Chart_Title" xml:space="preserve"><value>Pakete / s — letzte {0} Min.</value></data>
   <data name="Chart_Unit" xml:space="preserve"><value>Pakete/s</value></data>
   <data name="Chart_Empty" xml:space="preserve"><value>Noch kein Datenverkehr. Starte die Verteilung und Forza — der Graph füllt sich, sobald Pakete fließen.</value></data>
@@ -86,9 +102,9 @@
   <data name="Dot_Error" xml:space="preserve"><value>Fehler</value></data>
   <data name="Dot_Tooltip" xml:space="preserve"><value>Pakete werden an {0}:{1} weitergeleitet. UDP ist einseitig — die Zustellung an die Empfänger-App kann nicht bestätigt werden.</value></data>
 
-  <data name="Status_Stopped" xml:space="preserve"><value>Gestoppt</value></data>
-  <data name="Status_WaitingForForza" xml:space="preserve"><value>Läuft — warte auf Forza (Data Out auf {0}:{1} einstellen)</value></data>
-  <data name="Status_Connected" xml:space="preserve"><value>{0} verbunden — {1} Pakete/s — Rennen {2} — {3}</value></data>
+  <data name="Status_Stopped" xml:space="preserve"><value>Gestoppt — keine Telemetrie empfangen</value></data>
+  <data name="Status_WaitingForForza" xml:space="preserve"><value>Läuft — warte auf Telemetrie von Forza (Data Out auf {0}:{1} einstellen)</value></data>
+  <data name="Status_Connected" xml:space="preserve"><value>Empfang von {0} — {1} Pakete/s — Rennen {2} — {3}</value></data>
   <data name="Status_RaceOn" xml:space="preserve"><value>AN</value></data>
   <data name="Status_RaceOff" xml:space="preserve"><value>AUS</value></data>
   <data name="Readout_Gear" xml:space="preserve"><value>Gang {0}   {1}</value></data>

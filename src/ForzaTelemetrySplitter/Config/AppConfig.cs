@@ -37,6 +37,22 @@ public sealed class AppConfig
     /// <summary>UI language. Auto (default) follows the Windows display language.</summary>
     public AppLanguage Language { get; set; } = AppLanguage.Auto;
 
+    // --- Overlay appearance/position (customizable from the Overlay tab) ---
+    /// <summary>When true, the overlay shows no background panel (only the dot + text).</summary>
+    public bool OverlayTransparentBg { get; set; } = true;
+    /// <summary>Overlay background color (ARGB int) when not transparent. Default dark grey.</summary>
+    public int OverlayBgColorArgb { get; set; } = unchecked((int)0xFF1C1C1E);
+    /// <summary>Overlay text color (ARGB int). Default white.</summary>
+    public int OverlayTextColorArgb { get; set; } = unchecked((int)0xFFFFFFFF);
+    /// <summary>Overlay background opacity percent (10–100) when not transparent.</summary>
+    public int OverlayOpacity { get; set; } = 82;
+    /// <summary>Saved overlay position; null = auto top-right.</summary>
+    public int? OverlayX { get; set; }
+    public int? OverlayY { get; set; }
+
+    /// <summary>Folder for telemetry log files. Empty = default (a "logs" folder next to the app).</summary>
+    public string LogDirectory { get; set; } = "";
+
     public List<Destination> Destinations { get; set; } = new();
 
     /// <summary>

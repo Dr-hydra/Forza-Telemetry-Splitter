@@ -37,17 +37,27 @@ internal static class Program
         var tray = new TrayContext(config, mainForm, overlay);
 
         // On the very first launch, walk the user through pointing Forza at the splitter.
+        bool showedWelcome = false;
         if (!config.FirstRunComplete)
         {
             using var welcome = new WelcomeForm(config);
             welcome.ShowDialog();
             config.FirstRunComplete = welcome.DontShowAgain;
             ConfigStore.Save(config);
+            showedWelcome = true;
         }
 
         // Start splitting immediately if configured to (default), so it works the moment Forza sends.
         if (config.AutoStartSplitting)
             mainForm.ToggleRunning();
+
+        // After the first-run welcome, open the main window so the user sees the app is running.
+        // (Normal launches start in the tray.)
+        if (showedWelcome)
+        {
+            mainForm.Show();
+            mainForm.Activate();
+        }
 
         // Run headless in the tray. The main window is shown on demand from the tray menu.
         Application.Run(tray);

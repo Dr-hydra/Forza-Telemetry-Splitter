@@ -21,11 +21,15 @@ public sealed class MainForm : Form
     private readonly ComboBox _units = new();
     private readonly ComboBox _language = new();
     private readonly CheckBox _startWithWindows = new();
-    private readonly Button _record = new();
     private readonly TabControl _tabs = new();
     private readonly TabPage _statusPage = new();
     private readonly TabPage _activityPage = new();
+    private readonly TabPage _overlayPage = new();
     private ActivityChart? _chart;
+    private readonly Button _logToggle = new();      // Start/Stop logging (Activity tab)
+    private readonly Label _logFolderLabel = new();
+    private readonly Panel _statusDot = new();       // reliably-rendered colored status indicator
+    private Color _statusDotColor = Color.Gray;
     private readonly Dictionary<Destination, long> _prevForwarded = new();
     private readonly Dictionary<Destination, DestinationStatus> _statusCache = new();
     private readonly System.Windows.Forms.Timer _uiTimer = new();
@@ -63,10 +67,13 @@ public sealed class MainForm : Form
 
         Text = Strings.Main_Title;
         Icon = AppIcon.Load();
-        ClientSize = new Size(620, 440);
-        MinimumSize = new Size(540, 380);
+        ClientSize = new Size(640, 480);
+        MinimumSize = new Size(560, 440);
         StartPosition = FormStartPosition.CenterScreen;
         Font = new Font("Segoe UI", 9f);
+
+        _overlay.ApplySettings(_config);
+        _overlay.Moved += p => { _config.OverlayX = p.X; _config.OverlayY = p.Y; ConfigStore.Save(_config); };
 
         BuildLayout();
         RefreshGrid();
@@ -81,16 +88,19 @@ public sealed class MainForm : Form
 
     private void BuildLayout()
     {
-        // Two tabs: Status (the destinations grid + controls) and Activity (the throughput chart).
+        // Three tabs: Status (destinations + controls), Activity (throughput + logging), Overlay (settings).
         _tabs.Dock = DockStyle.Fill;
         _statusPage.Text = Strings.Tab_Status;
         _activityPage.Text = Strings.Tab_Activity;
+        _overlayPage.Text = Strings.Tab_Overlay;
         _tabs.TabPages.Add(_statusPage);
         _tabs.TabPages.Add(_activityPage);
+        _tabs.TabPages.Add(_overlayPage);
         Controls.Add(_tabs);
 
         BuildStatusTab();
         BuildActivityTab();
+        BuildOverlayTab();
 
         UpdateStartStopButton();
     }
@@ -107,8 +117,8 @@ public sealed class MainForm : Form
         _listenInfo.Text = Strings.Main_ListenInfo(_config.ListenIp, _config.ListenPort);
         host.Controls.Add(_listenInfo);
 
-        // Destination grid
-        _grid.SetBounds(12, 34, hostW - 24, hostH - 130);
+        // Destination grid (height computed below once the bottom rows are placed).
+        _grid.SetBounds(12, 34, hostW - 24, hostH - 170);
         _grid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         _grid.AllowUserToAddRows = false;
         _grid.AllowUserToDeleteRows = false;
@@ -129,20 +139,62 @@ public sealed class MainForm : Form
         _grid.CellPainting += OnStatusCellPainting;
         host.Controls.Add(_grid);
 
-        // Buttons row
-        int by = host.ClientSize.Height - 84;
-        var add = MakeButton(host, Strings.Main_Add, 12, by, AnchorStyles.Bottom | AnchorStyles.Left);
-        add.Click += (_, _) => AddDestination();
-        var edit = MakeButton(host, Strings.Main_Edit, 96, by, AnchorStyles.Bottom | AnchorStyles.Left);
-        edit.Click += (_, _) => EditSelected();
-        var remove = MakeButton(host, Strings.Main_Remove, 180, by, AnchorStyles.Bottom | AnchorStyles.Left);
-        remove.Click += (_, _) => RemoveSelected();
+        // Language selector (top-right).
+        _language.DropDownStyle = ComboBoxStyle.DropDownList;
+        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español" });
+        _language.SelectedIndex = Array.IndexOf(_languageOrder, _config.Language) is var i && i >= 0 ? i : 0;
+        _language.SetBounds(hostW - 132, 8, 120, 24);
+        _language.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        _language.SelectedIndexChanged += OnLanguageChanged;
+        host.Controls.Add(_language);
 
-        // Speed-unit toggle (Mph / Kph), persisted to config.
+        // --- Bottom region, laid out bottom-up so nothing overlaps or clips ---
+        int H = host.ClientSize.Height;
+        int W = host.ClientSize.Width;
+
+        // (1) Italic "you can close this window" note, at the very bottom.
+        var bgNote = new Label
+        {
+            Text = Strings.Main_BackgroundNote,
+            Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
+            ForeColor = Color.DimGray,
+            AutoSize = false,
+            TextAlign = ContentAlignment.MiddleLeft,
+        };
+        bgNote.SetBounds(12, H - 26, W - 24, 20);
+        bgNote.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        host.Controls.Add(bgNote);
+
+        // (2) Status strip above the note: a reliably-painted colored dot + text.
+        _statusDot.SetBounds(12, H - 52, 14, 14);
+        _statusDot.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        _statusDot.Paint += (_, pe) =>
+        {
+            pe.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using var b = new SolidBrush(_statusDotColor);
+            pe.Graphics.FillEllipse(b, 0, 0, _statusDot.Width - 1, _statusDot.Height - 1);
+        };
+        host.Controls.Add(_statusDot);
+
+        _status.SetBounds(32, H - 56, W - 44, 26);
+        _status.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        _status.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+        host.Controls.Add(_status);
+
+        // (3) Controls row: Start-with-Windows (left), units + Start/Stop (right).
+        int row3 = H - 92;
+        _startWithWindows.Text = Strings.Main_StartWithWindows;
+        _startWithWindows.AutoSize = true;
+        _startWithWindows.SetBounds(12, row3 + 4, 240, 22);
+        _startWithWindows.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        _startWithWindows.Checked = StartupRegistration.IsEnabled();
+        _startWithWindows.CheckedChanged += OnStartWithWindowsChanged;
+        host.Controls.Add(_startWithWindows);
+
         _units.DropDownStyle = ComboBoxStyle.DropDownList;
         _units.Items.AddRange(new object[] { "mph", "kph" });
         _units.SelectedIndex = _config.SpeedUnit == SpeedUnit.Kph ? 1 : 0;
-        _units.SetBounds(host.ClientSize.Width - 210, by + 2, 64, 24);
+        _units.SetBounds(W - 200, row3 + 2, 60, 24);
         _units.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         _units.SelectedIndexChanged += (_, _) =>
         {
@@ -151,68 +203,163 @@ public sealed class MainForm : Form
         };
         host.Controls.Add(_units);
 
-        // Language selector (top-right). Entries use native names so they're recognizable in any UI
-        // language; "Auto" follows the Windows display language. Order maps to _languageOrder below.
-        _language.DropDownStyle = ComboBoxStyle.DropDownList;
-        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español" });
-        _language.SelectedIndex = Array.IndexOf(_languageOrder, _config.Language) is var i && i >= 0 ? i : 0;
-        _language.SetBounds(host.ClientSize.Width - 132, 8, 120, 24);
-        _language.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        _language.SelectedIndexChanged += OnLanguageChanged;
-        host.Controls.Add(_language);
-
-        _startStop.SetBounds(host.ClientSize.Width - 132, by, 120, 28);
+        _startStop.SetBounds(W - 132, row3, 120, 28);
         _startStop.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         _startStop.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
         _startStop.Click += (_, _) => ToggleRunning();
         host.Controls.Add(_startStop);
 
-        // Extra row above the buttons: "Start with Windows" (left) and Record (right).
-        int er = by - 32;
-        _startWithWindows.Text = Strings.Main_StartWithWindows;
-        _startWithWindows.AutoSize = true;
-        _startWithWindows.SetBounds(12, er + 4, 240, 22);
-        _startWithWindows.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-        _startWithWindows.Checked = StartupRegistration.IsEnabled();
-        _startWithWindows.CheckedChanged += OnStartWithWindowsChanged;
-        host.Controls.Add(_startWithWindows);
+        // (4) Action row: Add / Edit / Remove.
+        int row4 = H - 124;
+        var add = MakeButton(host, Strings.Main_Add, 12, row4, AnchorStyles.Bottom | AnchorStyles.Left);
+        add.Click += (_, _) => AddDestination();
+        var edit = MakeButton(host, Strings.Main_Edit, 96, row4, AnchorStyles.Bottom | AnchorStyles.Left);
+        edit.Click += (_, _) => EditSelected();
+        var remove = MakeButton(host, Strings.Main_Remove, 180, row4, AnchorStyles.Bottom | AnchorStyles.Left);
+        remove.Click += (_, _) => RemoveSelected();
 
-        _record.Text = Strings.Main_Record;
-        _record.SetBounds(host.ClientSize.Width - 132, er, 120, 26);
-        _record.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        _record.Click += (_, _) => ToggleRecording();
-        host.Controls.Add(_record);
-
-        // Status strip
-        _status.SetBounds(12, host.ClientSize.Height - 44, host.ClientSize.Width - 24, 32);
-        _status.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        _status.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-        host.Controls.Add(_status);
+        // Size the grid to end just above the action row.
+        _grid.Size = new Size(_grid.Width, row4 - 34 - 6);
     }
 
     private void BuildActivityTab()
     {
         var host = _activityPage;
+        int W = host.ClientSize.Width, H = host.ClientSize.Height;
+
+        // Chart fills the top; two control rows sit below it.
         _chart = new ActivityChart(_engine.History)
         {
-            Bounds = new Rectangle(8, 8, host.ClientSize.Width - 16, host.ClientSize.Height - 48),
+            Bounds = new Rectangle(8, 8, W - 16, H - 86),
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
         };
         host.Controls.Add(_chart);
 
+        // Row 1 (just under the chart): zoom + logging controls.
+        int row1 = H - 70;
         var zoomIn = new Button { Text = "+", Font = new Font("Segoe UI", 11f, FontStyle.Bold) };
-        zoomIn.SetBounds(8, host.ClientSize.Height - 36, 36, 28);
+        zoomIn.SetBounds(8, row1, 36, 28);
         zoomIn.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         zoomIn.Click += (_, _) => _chart?.ZoomIn();
         new ToolTip().SetToolTip(zoomIn, Strings.Zoom_In);
         host.Controls.Add(zoomIn);
 
         var zoomOut = new Button { Text = "−", Font = new Font("Segoe UI", 11f, FontStyle.Bold) };
-        zoomOut.SetBounds(48, host.ClientSize.Height - 36, 36, 28);
+        zoomOut.SetBounds(48, row1, 36, 28);
         zoomOut.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         zoomOut.Click += (_, _) => _chart?.ZoomOut();
         new ToolTip().SetToolTip(zoomOut, Strings.Zoom_Out);
         host.Controls.Add(zoomOut);
+
+        // Logging controls on the right of row 1.
+        _logToggle.SetBounds(W - 320, row1, 110, 28);
+        _logToggle.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        _logToggle.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+        _logToggle.Click += (_, _) => ToggleLogging();
+        host.Controls.Add(_logToggle);
+        UpdateLogButton();
+
+        var changeFolder = new Button { Text = Strings.Log_ChangeFolder };
+        changeFolder.SetBounds(W - 204, row1, 96, 28);
+        changeFolder.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        changeFolder.Click += (_, _) => ChangeLogFolder();
+        host.Controls.Add(changeFolder);
+
+        var openFolder = new Button { Text = Strings.Log_OpenFolder };
+        openFolder.SetBounds(W - 104, row1, 96, 28);
+        openFolder.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        openFolder.Click += (_, _) => OpenLogFolder();
+        host.Controls.Add(openFolder);
+
+        // Row 2: the current log folder path.
+        _logFolderLabel.Text = Strings.Log_FolderLabel(LogDir);
+        _logFolderLabel.Font = new Font("Segoe UI", 8f);
+        _logFolderLabel.ForeColor = Color.DimGray;
+        _logFolderLabel.AutoEllipsis = true;
+        _logFolderLabel.SetBounds(8, H - 32, W - 16, 22);
+        _logFolderLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        host.Controls.Add(_logFolderLabel);
+    }
+
+    private void BuildOverlayTab()
+    {
+        var host = _overlayPage;
+        int x = 18, y = 18, rowH = 36;
+
+        var show = new CheckBox { Text = Strings.Ov_Show, AutoSize = true, Checked = _config.ShowOverlay };
+        show.SetBounds(x, y, 280, 24);
+        show.CheckedChanged += (_, _) =>
+        {
+            _config.ShowOverlay = show.Checked;
+            ConfigStore.Save(_config);
+            if (_config.ShowOverlay) { _overlay.ApplySettings(_config); _overlay.Show(); } else _overlay.Hide();
+        };
+        host.Controls.Add(show);
+        y += rowH;
+
+        var transparent = new CheckBox { Text = Strings.Ov_TransparentBg, AutoSize = true, Checked = _config.OverlayTransparentBg };
+        host.Controls.Add(transparent);
+        transparent.SetBounds(x, y, 280, 24);
+        y += rowH;
+
+        var textColor = new Button { Text = Strings.Ov_TextColor };
+        textColor.SetBounds(x, y, 150, 28);
+        textColor.Click += (_, _) =>
+        {
+            using var dlg = new ColorDialog { Color = Color.FromArgb(_config.OverlayTextColorArgb), FullOpen = true };
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+            _config.OverlayTextColorArgb = dlg.Color.ToArgb();
+            ConfigStore.Save(_config); _overlay.ApplySettings(_config);
+        };
+        host.Controls.Add(textColor);
+        y += rowH;
+
+        var bgColor = new Button { Text = Strings.Ov_BgColor };
+        bgColor.SetBounds(x, y, 150, 28);
+        bgColor.Click += (_, _) =>
+        {
+            using var dlg = new ColorDialog { Color = Color.FromArgb(_config.OverlayBgColorArgb), FullOpen = true };
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+            _config.OverlayBgColorArgb = unchecked((int)0xFF000000) | (dlg.Color.ToArgb() & 0x00FFFFFF);
+            ConfigStore.Save(_config); _overlay.ApplySettings(_config);
+        };
+        host.Controls.Add(bgColor);
+        y += rowH;
+
+        var opacityLabel = new Label { Text = Strings.Ov_Opacity, AutoSize = true };
+        opacityLabel.SetBounds(x, y + 4, 160, 20);
+        host.Controls.Add(opacityLabel);
+        var opacity = new TrackBar { Minimum = 10, Maximum = 100, Value = Math.Clamp(_config.OverlayOpacity, 10, 100), TickFrequency = 10 };
+        opacity.SetBounds(x + 160, y, 220, 30);
+        opacity.ValueChanged += (_, _) => { _config.OverlayOpacity = opacity.Value; ConfigStore.Save(_config); _overlay.ApplySettings(_config); };
+        host.Controls.Add(opacity);
+        y += rowH + 8;
+
+        // Background color + opacity only matter when NOT transparent; enable/disable accordingly.
+        void SyncBgEnabled() { bgColor.Enabled = opacity.Enabled = opacityLabel.Enabled = !transparent.Checked; }
+        transparent.CheckedChanged += (_, _) =>
+        {
+            _config.OverlayTransparentBg = transparent.Checked;
+            ConfigStore.Save(_config); _overlay.ApplySettings(_config); SyncBgEnabled();
+        };
+        SyncBgEnabled();
+
+        // Move overlay toggle + hint.
+        var moveBtn = new Button { Text = Strings.Ov_Move };
+        moveBtn.SetBounds(x, y, 150, 30);
+        host.Controls.Add(moveBtn);
+        var moveHint = new Label { Text = Strings.Ov_MoveHint, AutoSize = false, ForeColor = Color.DimGray, Visible = false };
+        moveHint.SetBounds(x + 160, y + 4, host.ClientSize.Width - x - 170, 40);
+        host.Controls.Add(moveHint);
+        bool moving = false;
+        moveBtn.Click += (_, _) =>
+        {
+            moving = !moving;
+            if (moving && !_config.ShowOverlay) { _config.ShowOverlay = true; ConfigStore.Save(_config); show.Checked = true; _overlay.Show(); }
+            _overlay.SetMovable(moving);
+            moveBtn.Text = moving ? Strings.Ov_DoneMoving : Strings.Ov_Move;
+            moveHint.Visible = moving;
+        };
     }
 
     private Button MakeButton(Control host, string text, int x, int y, AnchorStyles anchor)
@@ -419,7 +566,13 @@ public sealed class MainForm : Form
         }
     }
 
-    private void ToggleRecording()
+    /// <summary>The folder where logs are written: the user's choice, or a "logs" folder next to the app.</summary>
+    private string LogDir =>
+        string.IsNullOrWhiteSpace(_config.LogDirectory)
+            ? Path.Combine(AppContext.BaseDirectory, "logs")
+            : _config.LogDirectory;
+
+    private void ToggleLogging()
     {
         if (_engine.IsRecording)
         {
@@ -427,22 +580,37 @@ public sealed class MainForm : Form
         }
         else
         {
-            using var dlg = new SaveFileDialog
-            {
-                Title = Strings.Record_SaveTitle,
-                Filter = Strings.Record_Filter,
-                FileName = $"forza-session-{DateTime.Now:yyyyMMdd-HHmmss}.fts",
-            };
-            if (dlg.ShowDialog(this) != DialogResult.OK) return;
-            _engine.StartRecording(dlg.FileName);
+            try { Directory.CreateDirectory(LogDir); } catch { }
+            string path = Path.Combine(LogDir, $"forza-session-{DateTime.Now:yyyyMMdd-HHmmss}.fts");
+            _engine.StartRecording(path);
         }
-        UpdateRecordButton();
+        UpdateLogButton();
     }
 
-    private void UpdateRecordButton()
+    private void UpdateLogButton()
     {
-        _record.Text = _engine.IsRecording ? Strings.Main_StopRecording : Strings.Main_Record;
-        _record.ForeColor = _engine.IsRecording ? Color.Firebrick : SystemColors.ControlText;
+        _logToggle.Text = _engine.IsRecording ? Strings.Log_Stop : Strings.Log_Start;
+        _logToggle.ForeColor = _engine.IsRecording ? Color.Firebrick : SystemColors.ControlText;
+    }
+
+    private void ChangeLogFolder()
+    {
+        using var dlg = new FolderBrowserDialog { SelectedPath = LogDir };
+        if (dlg.ShowDialog(this) != DialogResult.OK) return;
+        _config.LogDirectory = dlg.SelectedPath;
+        ConfigStore.Save(_config);
+        _logFolderLabel.Text = Strings.Log_FolderLabel(LogDir);
+    }
+
+    private void OpenLogFolder()
+    {
+        try { Directory.CreateDirectory(LogDir); } catch { }
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            { FileName = LogDir, UseShellExecute = true });
+        }
+        catch { /* ignore */ }
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
@@ -489,21 +657,30 @@ public sealed class MainForm : Form
             SpeedUnitExtensions.FormatGear(s.Gear),
             SpeedUnitExtensions.FormatSpeed(s.SpeedMps, _config.SpeedUnit));
 
-        string dot = s.Receiving ? "🟢" : (s.Running ? "🟡" : "⚪");
         string text;
+        Color dotColor;
         if (!s.Running)
-            text = $"{dot}  {Strings.Status_Stopped}";
+        {
+            text = Strings.Status_Stopped;
+            dotColor = Color.Gray;
+        }
         else if (s.Receiving)
-            text = $"{dot}  " + Strings.Status_Connected(
+        {
+            text = Strings.Status_Connected(
                 ForzaPacket.GameName(s.Format),
                 s.PacketsPerSecond,
                 s.IsRaceOn ? Strings.Status_RaceOn : Strings.Status_RaceOff,
                 readout);
+            dotColor = Color.FromArgb(46, 204, 113); // green: receiving from the game
+        }
         else
-            text = $"{dot}  {Strings.Status_WaitingForForza(_config.ListenIp, _config.ListenPort)}";
-        if (_engine.IsRecording) text += $"   ⏺ {Strings.Main_Recording}";
+        {
+            text = Strings.Status_WaitingForForza(_config.ListenIp, _config.ListenPort);
+            dotColor = Color.FromArgb(241, 196, 15);  // amber: running, waiting for the game
+        }
         _status.Text = text;
-        UpdateRecordButton();
+        if (_statusDotColor != dotColor) { _statusDotColor = dotColor; _statusDot.Invalidate(); }
+        UpdateLogButton();
 
         _overlay.SetStatus(s.Receiving, readout);
     }

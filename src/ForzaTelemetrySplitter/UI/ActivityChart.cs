@@ -26,14 +26,14 @@ public sealed class ActivityChart : Control
     private int _viewSeconds = DefaultView;
     private bool _running;
 
-    // Cached GDI+ objects (created once, disposed in Dispose).
-    private readonly Pen _gridPen = new(Color.FromArgb(40, 255, 255, 255));
-    private readonly Pen _linePen = new(Color.FromArgb(46, 204, 113), 1.6f);
+    // Cached GDI+ objects (created once, disposed in Dispose). Tuned for a WHITE background.
+    private readonly Pen _gridPen = new(Color.FromArgb(30, 0, 0, 0));        // faint light-grey gridlines
+    private readonly Pen _linePen = new(Color.FromArgb(39, 174, 96), 1.8f);  // brand green, darker for white bg
     private readonly Font _titleFont = new("Segoe UI", 9f, FontStyle.Bold);
     private readonly Font _axisFont = new("Segoe UI", 8f);
     private readonly Font _bigFont = new("Segoe UI", 20f, FontStyle.Bold);
-    private readonly SolidBrush _textBrush = new(Color.Gainsboro);
-    private readonly SolidBrush _dimBrush = new(Color.Gray);
+    private readonly SolidBrush _textBrush = new(Color.FromArgb(40, 40, 40)); // near-black text
+    private readonly SolidBrush _dimBrush = new(Color.FromArgb(120, 120, 120)); // grey axis labels
 
     public ActivityChart(ActivityHistory history)
     {
@@ -44,7 +44,7 @@ public sealed class ActivityChart : Control
         SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer
                  | ControlStyles.UserPaint | ControlStyles.ResizeRedraw, true);
         DoubleBuffered = true;
-        BackColor = Color.FromArgb(24, 24, 26);
+        BackColor = Color.White;
     }
 
     /// <summary>The current view window in seconds (for the title/labels).</summary>
@@ -176,7 +176,7 @@ public sealed class ActivityChart : Control
         fill.CloseFigure();
         using var grad = new LinearGradientBrush(
             new RectangleF(plot.Left, plot.Top, plot.Width, plot.Height),
-            Color.FromArgb(80, 46, 204, 113), Color.FromArgb(8, 46, 204, 113), LinearGradientMode.Vertical);
+            Color.FromArgb(70, 39, 174, 96), Color.FromArgb(6, 39, 174, 96), LinearGradientMode.Vertical);
         g.FillPath(grad, fill);
         g.DrawLines(_linePen, _pts.AsSpan(0, count).ToArray());
     }
