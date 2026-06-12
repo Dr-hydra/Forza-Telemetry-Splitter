@@ -74,10 +74,14 @@
   <data name="Tab_Status" xml:space="preserve"><value>État</value></data>
   <data name="Tab_Activity" xml:space="preserve"><value>Activité</value></data>
   <data name="Tab_Overlay" xml:space="preserve"><value>Overlay</value></data>
+  <data name="Tab_Settings" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Settings_StartupDesc" xml:space="preserve"><value>Lancer Forza Telemetry Splitter automatiquement à la connexion à Windows.</value></data>
+  <data name="Settings_UnitDesc" xml:space="preserve"><value>Unités de la vitesse affichée dans l'overlay et la barre d'état.</value></data>
+  <data name="Settings_LangDesc" xml:space="preserve"><value>Langue d'affichage de l'application.</value></data>
   <data name="Main_BackgroundNote" xml:space="preserve"><value>Vous pouvez fermer cette fenêtre, l'outil restera ouvert en arrière-plan.</value></data>
   <data name="Log_Start" xml:space="preserve"><value>Démarrer l'enregistrement</value></data>
   <data name="Log_Stop" xml:space="preserve"><value>Arrêter l'enregistrement</value></data>
-  <data name="Log_ChangeFolder" xml:space="preserve"><value>Changer de dossier…</value></data>
+  <data name="Log_ChangeFolder" xml:space="preserve"><value>Changer l'emplacement des journaux…</value></data>
   <data name="Log_OpenFolder" xml:space="preserve"><value>Ouvrir le dossier des journaux</value></data>
   <data name="Log_Recording" xml:space="preserve"><value>Enregistrement…</value></data>
   <data name="Log_FolderLabel" xml:space="preserve"><value>Journaux : {0}</value></data>

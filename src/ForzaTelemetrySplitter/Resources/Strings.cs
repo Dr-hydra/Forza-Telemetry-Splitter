@@ -55,6 +55,10 @@ public static class Strings
     public static string Tab_Status => Get(nameof(Tab_Status));
     public static string Tab_Activity => Get(nameof(Tab_Activity));
     public static string Tab_Overlay => Get(nameof(Tab_Overlay));
+    public static string Tab_Settings => Get(nameof(Tab_Settings));
+    public static string Settings_StartupDesc => Get(nameof(Settings_StartupDesc));
+    public static string Settings_UnitDesc => Get(nameof(Settings_UnitDesc));
+    public static string Settings_LangDesc => Get(nameof(Settings_LangDesc));
 
     // Main window
     public static string Main_BackgroundNote => Get(nameof(Main_BackgroundNote));

@@ -74,10 +74,14 @@
   <data name="Tab_Status" xml:space="preserve"><value>ステータス</value></data>
   <data name="Tab_Activity" xml:space="preserve"><value>アクティビティ</value></data>
   <data name="Tab_Overlay" xml:space="preserve"><value>オーバーレイ</value></data>
+  <data name="Tab_Settings" xml:space="preserve"><value>設定</value></data>
+  <data name="Settings_StartupDesc" xml:space="preserve"><value>Windows へのサインイン時に Forza Telemetry Splitter を自動的に起動します。</value></data>
+  <data name="Settings_UnitDesc" xml:space="preserve"><value>オーバーレイとステータスに表示する速度の単位。</value></data>
+  <data name="Settings_LangDesc" xml:space="preserve"><value>アプリの表示言語。</value></data>
   <data name="Main_BackgroundNote" xml:space="preserve"><value>このウィンドウは閉じても大丈夫です。ツールはバックグラウンドで動作し続けます。</value></data>
   <data name="Log_Start" xml:space="preserve"><value>ログ開始</value></data>
   <data name="Log_Stop" xml:space="preserve"><value>ログ停止</value></data>
-  <data name="Log_ChangeFolder" xml:space="preserve"><value>フォルダを変更…</value></data>
+  <data name="Log_ChangeFolder" xml:space="preserve"><value>ログの保存先を変更…</value></data>
   <data name="Log_OpenFolder" xml:space="preserve"><value>ログフォルダを開く</value></data>
   <data name="Log_Recording" xml:space="preserve"><value>記録中…</value></data>
   <data name="Log_FolderLabel" xml:space="preserve"><value>ログ: {0}</value></data>

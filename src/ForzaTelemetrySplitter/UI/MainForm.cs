@@ -25,6 +25,7 @@ public sealed class MainForm : Form
     private readonly TabPage _statusPage = new();
     private readonly TabPage _activityPage = new();
     private readonly TabPage _overlayPage = new();
+    private readonly TabPage _settingsPage = new();
     private ActivityChart? _chart;
     private readonly Button _logToggle = new();      // Start/Stop logging (Activity tab)
     private readonly Label _logFolderLabel = new();
@@ -88,19 +89,23 @@ public sealed class MainForm : Form
 
     private void BuildLayout()
     {
-        // Three tabs: Status (destinations + controls), Activity (throughput + logging), Overlay (settings).
+        // Tabs: Status (destinations), Activity (throughput + logging), Overlay (overlay settings),
+        // Settings (preferences).
         _tabs.Dock = DockStyle.Fill;
         _statusPage.Text = Strings.Tab_Status;
         _activityPage.Text = Strings.Tab_Activity;
         _overlayPage.Text = Strings.Tab_Overlay;
+        _settingsPage.Text = Strings.Tab_Settings;
         _tabs.TabPages.Add(_statusPage);
         _tabs.TabPages.Add(_activityPage);
         _tabs.TabPages.Add(_overlayPage);
+        _tabs.TabPages.Add(_settingsPage);
         Controls.Add(_tabs);
 
         BuildStatusTab();
         BuildActivityTab();
         BuildOverlayTab();
+        BuildSettingsTab();
 
         UpdateStartStopButton();
     }
@@ -135,18 +140,15 @@ public sealed class MainForm : Form
         _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = Strings.Col_Port, Name = "Port", FillWeight = 12 });
         _grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = Strings.Col_Forwarded, Name = "Count", FillWeight = 18 });
         _grid.CellContentClick += OnGridCellClick;
-        _grid.CellDoubleClick += (_, e) => { if (e.RowIndex >= 0) EditSelected(); };
+        _grid.CellDoubleClick += (_, e) =>
+        {
+            // Don't treat a double-click on the Enabled/Status cells as "edit" — toggling the
+            // checkbox must just enable/disable, never open the edit dialog.
+            if (e.RowIndex >= 0 && _grid.Columns[e.ColumnIndex].Name is not ("Enabled" or "Status"))
+                EditSelected();
+        };
         _grid.CellPainting += OnStatusCellPainting;
         host.Controls.Add(_grid);
-
-        // Language selector (top-right).
-        _language.DropDownStyle = ComboBoxStyle.DropDownList;
-        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español" });
-        _language.SelectedIndex = Array.IndexOf(_languageOrder, _config.Language) is var i && i >= 0 ? i : 0;
-        _language.SetBounds(hostW - 132, 8, 120, 24);
-        _language.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        _language.SelectedIndexChanged += OnLanguageChanged;
-        host.Controls.Add(_language);
 
         // --- Bottom region, laid out bottom-up so nothing overlaps or clips ---
         int H = host.ClientSize.Height;
@@ -181,45 +183,23 @@ public sealed class MainForm : Form
         _status.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
         host.Controls.Add(_status);
 
-        // (3) Controls row: Start-with-Windows (left), units + Start/Stop (right).
-        int row3 = H - 92;
-        _startWithWindows.Text = Strings.Main_StartWithWindows;
-        _startWithWindows.AutoSize = true;
-        _startWithWindows.SetBounds(12, row3 + 4, 240, 22);
-        _startWithWindows.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-        _startWithWindows.Checked = StartupRegistration.IsEnabled();
-        _startWithWindows.CheckedChanged += OnStartWithWindowsChanged;
-        host.Controls.Add(_startWithWindows);
+        // (3) Action row: Add / Edit / Remove (left), Start/Stop (right).
+        int row = H - 92;
+        var add = MakeButton(host, Strings.Main_Add, 12, row, AnchorStyles.Bottom | AnchorStyles.Left);
+        add.Click += (_, _) => AddDestination();
+        var edit = MakeButton(host, Strings.Main_Edit, 96, row, AnchorStyles.Bottom | AnchorStyles.Left);
+        edit.Click += (_, _) => EditSelected();
+        var remove = MakeButton(host, Strings.Main_Remove, 180, row, AnchorStyles.Bottom | AnchorStyles.Left);
+        remove.Click += (_, _) => RemoveSelected();
 
-        _units.DropDownStyle = ComboBoxStyle.DropDownList;
-        _units.Items.AddRange(new object[] { "mph", "kph" });
-        _units.SelectedIndex = _config.SpeedUnit == SpeedUnit.Kph ? 1 : 0;
-        _units.SetBounds(W - 200, row3 + 2, 60, 24);
-        _units.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        _units.SelectedIndexChanged += (_, _) =>
-        {
-            _config.SpeedUnit = _units.SelectedIndex == 1 ? SpeedUnit.Kph : SpeedUnit.Mph;
-            ConfigStore.Save(_config);
-        };
-        host.Controls.Add(_units);
-
-        _startStop.SetBounds(W - 132, row3, 120, 28);
+        _startStop.SetBounds(W - 132, row, 120, 28);
         _startStop.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         _startStop.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
         _startStop.Click += (_, _) => ToggleRunning();
         host.Controls.Add(_startStop);
 
-        // (4) Action row: Add / Edit / Remove.
-        int row4 = H - 124;
-        var add = MakeButton(host, Strings.Main_Add, 12, row4, AnchorStyles.Bottom | AnchorStyles.Left);
-        add.Click += (_, _) => AddDestination();
-        var edit = MakeButton(host, Strings.Main_Edit, 96, row4, AnchorStyles.Bottom | AnchorStyles.Left);
-        edit.Click += (_, _) => EditSelected();
-        var remove = MakeButton(host, Strings.Main_Remove, 180, row4, AnchorStyles.Bottom | AnchorStyles.Left);
-        remove.Click += (_, _) => RemoveSelected();
-
         // Size the grid to end just above the action row.
-        _grid.Size = new Size(_grid.Width, row4 - 34 - 6);
+        _grid.Size = new Size(_grid.Width, row - 34 - 6);
     }
 
     private void BuildActivityTab()
@@ -360,6 +340,63 @@ public sealed class MainForm : Form
             moveBtn.Text = moving ? Strings.Ov_DoneMoving : Strings.Ov_Move;
             moveHint.Visible = moving;
         };
+    }
+
+    private void BuildSettingsTab()
+    {
+        var host = _settingsPage;
+        int x = 18, y = 18, gap = 8;
+
+        // Start with Windows.
+        _startWithWindows.Text = Strings.Main_StartWithWindows;
+        _startWithWindows.AutoSize = true;
+        _startWithWindows.SetBounds(x, y, 320, 24);
+        _startWithWindows.Checked = StartupRegistration.IsEnabled();
+        _startWithWindows.CheckedChanged += OnStartWithWindowsChanged;
+        host.Controls.Add(_startWithWindows);
+        var startupDesc = MakeDesc(Strings.Settings_StartupDesc, x + 4, y + 24, host.ClientSize.Width - x - 24);
+        host.Controls.Add(startupDesc);
+        y = startupDesc.Bottom + gap + 12;
+
+        // Speed unit.
+        var unitLabel = new Label { Text = Strings.Settings_UnitDesc, AutoSize = false, Font = new Font("Segoe UI", 9f) };
+        unitLabel.SetBounds(x, y + 3, 340, 20);
+        host.Controls.Add(unitLabel);
+        _units.DropDownStyle = ComboBoxStyle.DropDownList;
+        _units.Items.AddRange(new object[] { "mph", "kph" });
+        _units.SelectedIndex = _config.SpeedUnit == SpeedUnit.Kph ? 1 : 0;
+        _units.SetBounds(x + 350, y, 70, 24);
+        _units.SelectedIndexChanged += (_, _) =>
+        {
+            _config.SpeedUnit = _units.SelectedIndex == 1 ? SpeedUnit.Kph : SpeedUnit.Mph;
+            ConfigStore.Save(_config);
+        };
+        host.Controls.Add(_units);
+        y += 36 + gap;
+
+        // Language.
+        var langLabel = new Label { Text = Strings.Settings_LangDesc, AutoSize = false, Font = new Font("Segoe UI", 9f) };
+        langLabel.SetBounds(x, y + 3, 340, 20);
+        host.Controls.Add(langLabel);
+        _language.DropDownStyle = ComboBoxStyle.DropDownList;
+        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español" });
+        _language.SelectedIndex = Array.IndexOf(_languageOrder, _config.Language) is var li && li >= 0 ? li : 0;
+        _language.SetBounds(x + 350, y, 130, 24);
+        _language.SelectedIndexChanged += OnLanguageChanged;
+        host.Controls.Add(_language);
+    }
+
+    private static Label MakeDesc(string text, int x, int y, int width)
+    {
+        var l = new Label
+        {
+            Text = text,
+            AutoSize = false,
+            ForeColor = Color.DimGray,
+            Font = new Font("Segoe UI", 8.5f),
+        };
+        l.SetBounds(x, y, width, 32);
+        return l;
     }
 
     private Button MakeButton(Control host, string text, int x, int y, AnchorStyles anchor)
