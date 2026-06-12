@@ -22,3 +22,6 @@ Thumbs.db
 
 # Telemetry session recordings (may contain a user's session data; never commit)
 *.fts
+
+# Local VirtualTCU settings backup (personal data, not part of the project)
+.vtcu-backup/

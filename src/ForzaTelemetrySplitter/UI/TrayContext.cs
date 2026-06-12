@@ -38,7 +38,7 @@ public sealed class TrayContext : ApplicationContext
         _tray = new NotifyIcon
         {
             Text = "Forza Telemetry Splitter",
-            Icon = SystemIcons.Application, // replaced with bundled .ico when assets are added
+            Icon = Resources.AppIcon.Load(),
             Visible = true,
             ContextMenuStrip = menu,
         };

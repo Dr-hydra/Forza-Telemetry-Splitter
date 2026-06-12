@@ -22,6 +22,7 @@ public sealed class WelcomeForm : Form
         _config = config;
 
         Text = Strings.Welcome_Title;
+        Icon = AppIcon.Load();
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
@@ -32,12 +33,27 @@ public sealed class WelcomeForm : Form
 
         int x = 18, w = ClientSize.Width - 36, y = 16;
 
+        // Logo in the top-right (transparent corners blend with the form background).
+        var logoImg = AppIcon.LoadImage();
+        int logoSize = 56;
+        if (logoImg is not null)
+        {
+            var logo = new PictureBox
+            {
+                Image = logoImg,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.Transparent,
+            };
+            logo.SetBounds(ClientSize.Width - logoSize - 16, 14, logoSize, logoSize);
+            Controls.Add(logo);
+        }
+
         var intro = new Label
         {
             Text = Strings.Welcome_Intro,
             AutoSize = false,
         };
-        intro.SetBounds(x, y, w, 40);
+        intro.SetBounds(x, y, logoImg is not null ? w - logoSize - 8 : w, 40);
         Controls.Add(intro);
         y += 48;
 

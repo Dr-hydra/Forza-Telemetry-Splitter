@@ -62,6 +62,7 @@ public sealed class MainForm : Form
         _overlay = overlay;
 
         Text = Strings.Main_Title;
+        Icon = AppIcon.Load();
         ClientSize = new Size(620, 440);
         MinimumSize = new Size(540, 380);
         StartPosition = FormStartPosition.CenterScreen;
