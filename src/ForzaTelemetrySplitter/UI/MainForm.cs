@@ -603,10 +603,15 @@ public sealed class MainForm : Form
         }
     }
 
-    /// <summary>The folder where logs are written: the user's choice, or a "logs" folder next to the app.</summary>
+    /// <summary>
+    /// The folder where logs are written: the user's choice, or a stable per-user default
+    /// (%APPDATA%\ForzaTelemetrySplitter\logs). We do NOT use AppContext.BaseDirectory because, for a
+    /// single-file published exe, that resolves to a temporary extraction folder Windows can delete —
+    /// which would lose the user's logs.
+    /// </summary>
     private string LogDir =>
         string.IsNullOrWhiteSpace(_config.LogDirectory)
-            ? Path.Combine(AppContext.BaseDirectory, "logs")
+            ? Path.Combine(ConfigStore.ConfigDirectory, "logs")
             : _config.LogDirectory;
 
     private void ToggleLogging()
