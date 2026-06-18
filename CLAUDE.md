@@ -25,10 +25,7 @@ prose, not to code blocks, command examples, or the markdown structure itself.
 
 - Do not use the semicolon character. Rewrite as two sentences.
 - Do not use em dashes or en dashes. Rewrite the sentence or use a comma, a
-  period, or parentheses.
-- Do not use the hyphen character in prose. Reword compound modifiers into
-  separate words or a short phrase. Keep hyphens only where they are part of a
-  literal file name, command, branch name, identifier, or code span.
+  period, or parentheses. Ordinary hyphens in compound words are fine.
 - Do not refer to AI, a model, an assistant, an agent, automation, or a tool as
   the author or actor. Do not say "as the maintainer requested", "the AI",
   "generated", "I am an assistant", or similar. Write in the first person as the
