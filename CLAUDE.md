@@ -16,3 +16,25 @@ not in chat or code.
 - On starting: comment the plan, move the card to In Progress. On finishing:
   comment implementation notes and open a PR with `Fixes #<n>`.
 - Log discovered work as new issues. Never leave a code-only TODO.
+
+## Writing style for issue comments and bodies (non-negotiable)
+
+All prose you write in an issue body or an issue comment reads as a human
+maintainer wrote it. It must not read as AI output. Apply these rules to the
+prose, not to code blocks, command examples, or the markdown structure itself.
+
+- Do not use the semicolon character. Rewrite as two sentences.
+- Do not use em dashes or en dashes. Rewrite the sentence or use a comma, a
+  period, or parentheses.
+- Do not use the hyphen character in prose. Reword compound modifiers into
+  separate words or a short phrase. Keep hyphens only where they are part of a
+  literal file name, command, branch name, identifier, or code span.
+- Do not refer to AI, a model, an assistant, an agent, automation, or a tool as
+  the author or actor. Do not say "as the maintainer requested", "the AI",
+  "generated", "I am an assistant", or similar. Write in the first person as the
+  person doing the work, or in plain second person.
+- Write in AWS documentation style: active voice, present tense, second person,
+  one idea per sentence, concise. Lead with the action or outcome. Use
+  sentence case in headings. Spell out an acronym on first use. Avoid "please",
+  "simply", "easy", "just".
+- Do not add sign offs, AI attribution, or "generated with" markers anywhere.
