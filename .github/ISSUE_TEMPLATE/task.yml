@@ -1,0 +1,28 @@
+name: Task
+description: A unit of work, usually under a feature
+labels: ["type: task", "priority: med"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: The why and the outcome. What is true now, and what should be true after.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable, observable outcomes. Start each item with a verb.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-goals
+      description: What is explicitly out of scope.
+    validations:
+      required: false
