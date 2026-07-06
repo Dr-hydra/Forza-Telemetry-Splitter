@@ -62,6 +62,9 @@
   <data name="Tray_GameClosed" xml:space="preserve"><value>Forza closed. Back to idle, still listening.</value></data>
 
   <data name="Main_Title" xml:space="preserve"><value>Forza Telemetry Splitter</value></data>
+  <data name="App_AlreadyRunning" xml:space="preserve"><value>Forza Telemetry Splitter is already running.
+
+Look for its icon in the system tray (bottom-right of the taskbar).</value></data>
   <data name="Main_Add" xml:space="preserve"><value>Add</value></data>
   <data name="Main_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="Main_Remove" xml:space="preserve"><value>Remove</value></data>
@@ -148,6 +151,10 @@
   <data name="Welcome_DontShow" xml:space="preserve"><value>Don't show this again</value></data>
   <data name="Welcome_OpenGuide" xml:space="preserve"><value>Open full setup guide</value></data>
   <data name="Welcome_GetStarted" xml:space="preserve"><value>Get started</value></data>
+  <data name="Welcome_SettingsBlock" xml:space="preserve"><value>Data Out      :  ON
+IP Address    :  127.0.0.1
+Port          :  {0}
+Packet Format :  Car Dash (Horizon) / Dash (Motorsport)</value></data>
 
   <data name="Lang_Label" xml:space="preserve"><value>Language:</value></data>
   <data name="Lang_Auto" xml:space="preserve"><value>Auto</value></data>
@@ -158,6 +165,12 @@
 Forza Telemetry Splitter needs its own free port to receive from Forza. Another tool (or a second copy of the splitter) is holding this one.
 
 Fix: open the splitter and change its listen port to a free one, then set Forza's Data Out port to match. The default {0} is normally free.</value></data>
+  <data name="Error_DestinationSelfPort" xml:space="preserve"><value>{0}:{1} is the splitter's own listen port.
+
+A destination must be a DIFFERENT port that your tool listens on.</value></data>
+  <data name="Error_DestinationSelfPortTitle" xml:space="preserve"><value>Port conflict</value></data>
+  <data name="Error_DuplicateDestination" xml:space="preserve"><value>Another destination ("{0}") already uses {1}:{2}.</value></data>
+  <data name="Error_DuplicateDestinationTitle" xml:space="preserve"><value>Duplicate destination</value></data>
 
   <data name="Settings_Companions" xml:space="preserve"><value>Companion apps</value></data>
   <data name="Settings_CompanionsDesc" xml:space="preserve"><value>Tools to launch when the splitter starts (manual or auto). Each enabled app starts unless it's already running. The splitter starts them but never closes them.</value></data>
@@ -180,4 +193,17 @@ Fix: open the splitter and change its listen port to a free one, then set Forza'
 {1}
 
 Check the path in Settings &gt; Companion apps. The splitter and your other tools are unaffected.</value></data>
+
+  <data name="Updates_LatestReleases" xml:space="preserve"><value>Latest releases:
+{0}</value></data>
+
+  <data name="Tuner_VirtualTcuNote" xml:space="preserve"><value>Auto-shifting transmission controller. Keep its normal listen port 5555 — no change needed.</value></data>
+  <data name="Tuner_ForzaDashNote" xml:space="preserve"><value>Open-source FH6 telemetry dashboard. Listens on 1234 by default.</value></data>
+  <data name="Tuner_ForzaDataToolsNote" xml:space="preserve"><value>Open-source CLI/dashboard for Data Out. Listens on 9999 by default.</value></data>
+  <data name="Tuner_SimDashboardNote" xml:space="preserve"><value>Phone/tablet dashboard. Listens on 5685 by default — use the device's IP, not 127.0.0.1, if it's another device.</value></data>
+  <data name="Tuner_SimHubNote" xml:space="preserve"><value>Dashboard/effects suite. Uses 20777 by default for Forza.</value></data>
+  <data name="Tuner_CoDriverNote" xml:space="preserve"><value>Open-source (MIT) dyno + tune workbench. Note: 5300 is at the edge of Forza's reserved 5200–5300 range; confirm it works.</value></data>
+  <data name="Tuner_TuneItYourselfNote" xml:space="preserve"><value>Live-telemetry auto-tuner (paid). Often receives over Wi-Fi to a phone/tablet — use that device's IP instead of 127.0.0.1.</value></data>
+  <data name="Tuner_CustomName" xml:space="preserve"><value>Custom…</value></data>
+  <data name="Tuner_CustomNote" xml:space="preserve"><value>Any other tool. Enter its name, IP and the port IT listens on. Avoid Forza's reserved 5200–5300 range.</value></data>
 </root>

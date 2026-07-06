@@ -37,6 +37,7 @@ public static class Strings
 
     // Main window
     public static string Main_Title => Get(nameof(Main_Title));
+    public static string App_AlreadyRunning => Get(nameof(App_AlreadyRunning));
     public static string Main_Add => Get(nameof(Main_Add));
     public static string Main_Edit => Get(nameof(Main_Edit));
     public static string Main_Remove => Get(nameof(Main_Remove));
@@ -141,6 +142,7 @@ public static class Strings
     public static string Welcome_DontShow => Get(nameof(Welcome_DontShow));
     public static string Welcome_OpenGuide => Get(nameof(Welcome_OpenGuide));
     public static string Welcome_GetStarted => Get(nameof(Welcome_GetStarted));
+    public static string Welcome_SettingsBlock(int port) => Format(nameof(Welcome_SettingsBlock), port);
 
     // Language selector
     public static string Lang_Label => Get(nameof(Lang_Label));
@@ -167,6 +169,26 @@ public static class Strings
 
     // Errors
     public static string Error_PortInUse(int port) => Format(nameof(Error_PortInUse), port);
+    public static string Error_DestinationSelfPort(string ip, int port) =>
+        Format(nameof(Error_DestinationSelfPort), ip, port);
+    public static string Error_DestinationSelfPortTitle => Get(nameof(Error_DestinationSelfPortTitle));
+    public static string Error_DuplicateDestination(string name, string ip, int port) =>
+        Format(nameof(Error_DuplicateDestination), name, ip, port);
+    public static string Error_DuplicateDestinationTitle => Get(nameof(Error_DuplicateDestinationTitle));
     public static string Error_CompanionLaunch(string name, string error)
         => Format(nameof(Error_CompanionLaunch), name, error);
+
+    // Update fallback
+    public static string Updates_LatestReleases(string url) => Format(nameof(Updates_LatestReleases), url);
+
+    // Destination presets
+    public static string Tuner_VirtualTcuNote => Get(nameof(Tuner_VirtualTcuNote));
+    public static string Tuner_ForzaDashNote => Get(nameof(Tuner_ForzaDashNote));
+    public static string Tuner_ForzaDataToolsNote => Get(nameof(Tuner_ForzaDataToolsNote));
+    public static string Tuner_SimDashboardNote => Get(nameof(Tuner_SimDashboardNote));
+    public static string Tuner_SimHubNote => Get(nameof(Tuner_SimHubNote));
+    public static string Tuner_CoDriverNote => Get(nameof(Tuner_CoDriverNote));
+    public static string Tuner_TuneItYourselfNote => Get(nameof(Tuner_TuneItYourselfNote));
+    public static string Tuner_CustomName => Get(nameof(Tuner_CustomName));
+    public static string Tuner_CustomNote => Get(nameof(Tuner_CustomNote));
 }

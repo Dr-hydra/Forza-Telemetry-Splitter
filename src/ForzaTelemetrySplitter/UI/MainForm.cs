@@ -725,9 +725,8 @@ public sealed class MainForm : Form
             candidate.Port == _config.ListenPort)
         {
             MessageBox.Show(this,
-                $"{candidate.Ip}:{candidate.Port} is the splitter's own listen port.\n\n" +
-                "A destination must be a DIFFERENT port that your tool listens on.",
-                "Port conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Strings.Error_DestinationSelfPort(candidate.Ip, candidate.Port),
+                Strings.Error_DestinationSelfPortTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return true;
         }
 
@@ -738,8 +737,8 @@ public sealed class MainForm : Form
                 d.Port == candidate.Port)
             {
                 MessageBox.Show(this,
-                    $"Another destination (\"{d.Name}\") already uses {candidate.Ip}:{candidate.Port}.",
-                    "Duplicate destination", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Strings.Error_DuplicateDestination(d.Name, candidate.Ip, candidate.Port),
+                    Strings.Error_DuplicateDestinationTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return true;
             }
         }

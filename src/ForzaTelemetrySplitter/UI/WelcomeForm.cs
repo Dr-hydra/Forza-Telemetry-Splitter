@@ -12,7 +12,7 @@ namespace ForzaTelemetrySplitter.UI;
 public sealed class WelcomeForm : Form
 {
     private const string SetupGuideUrl =
-        "https://github.com/jakemismas/Forza-Telemetry-Splitter#in-game-setup";
+        "https://github.com/Dr-hydra/Forza-Telemetry-Splitter#in-game-setup";
 
     private readonly AppConfig _config;
     private readonly CheckBox _dontShowAgain = new();
@@ -82,11 +82,7 @@ public sealed class WelcomeForm : Form
             Font = new Font("Consolas", 10f),
             TabStop = false,
         };
-        settings.Text =
-            "Data Out      :  ON\r\n" +
-            "IP Address    :  127.0.0.1\r\n" +
-            $"Port          :  {_config.ListenPort}\r\n" +
-            "Packet Format :  Car Dash (Horizon) / Dash (Motorsport)";
+        settings.Text = Strings.Welcome_SettingsBlock(_config.ListenPort);
         settings.SetBounds(x, y, w, 92);
         Controls.Add(settings);
         y += 102;
@@ -139,7 +135,7 @@ public sealed class WelcomeForm : Form
         }
         catch
         {
-            MessageBox.Show(url, "Forza Telemetry Splitter",
+            MessageBox.Show(url, Strings.Main_Title,
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

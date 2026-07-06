@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Threading;
 using ForzaTelemetrySplitter.Config;
 using ForzaTelemetrySplitter.Core;
+using ForzaTelemetrySplitter.Resources;
 using ForzaTelemetrySplitter.UI;
 
 namespace ForzaTelemetrySplitter;
@@ -14,22 +15,20 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        _singleInstance = new Mutex(initiallyOwned: true, "ForzaTelemetrySplitter.SingleInstance", out bool isNew);
-        if (!isNew)
-        {
-            MessageBox.Show(
-                "Forza Telemetry Splitter is already running.\n\nLook for its icon in the system tray (bottom-right of the taskbar).",
-                "Already running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return;
-        }
-
         ApplicationConfiguration.Initialize();
 
         var config = ConfigStore.Load();
 
-        // Apply the UI language BEFORE any form is built so every control picks up the right strings.
-        // Auto follows the Windows display language; unsupported languages fall back to English.
+        // Apply the UI language before any visible UI, including duplicate-instance warnings.
         ApplyCulture(config.Language);
+
+        _singleInstance = new Mutex(initiallyOwned: true, "ForzaTelemetrySplitter.SingleInstance", out bool isNew);
+        if (!isNew)
+        {
+            MessageBox.Show(Strings.App_AlreadyRunning, Strings.Main_Title,
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
 
         var engine = new SplitterEngine();
         var overlay = new OverlayForm();

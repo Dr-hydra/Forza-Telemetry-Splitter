@@ -37,7 +37,7 @@ public sealed class TrayContext : ApplicationContext
 
         _tray = new NotifyIcon
         {
-            Text = "Forza Telemetry Splitter",
+            Text = Strings.Main_Title,
             Icon = Resources.AppIcon.Load(),
             Visible = true,
             ContextMenuStrip = menu,
@@ -118,7 +118,7 @@ public sealed class TrayContext : ApplicationContext
         }
         catch
         {
-            MessageBox.Show($"Latest releases:\n{releasesUrl}", "Forza Telemetry Splitter",
+            MessageBox.Show(Strings.Updates_LatestReleases(releasesUrl), Strings.Main_Title,
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
@@ -132,7 +132,7 @@ public sealed class TrayContext : ApplicationContext
     {
         try
         {
-            _tray.BalloonTipTitle = "Forza Telemetry Splitter";
+            _tray.BalloonTipTitle = Strings.Main_Title;
             _tray.BalloonTipText = message.Length > 200 ? message[..200] + "…" : message;
             _tray.ShowBalloonTip(5000);
         }
@@ -147,7 +147,7 @@ public sealed class TrayContext : ApplicationContext
     {
         try
         {
-            _tray.BalloonTipTitle = "Forza Telemetry Splitter";
+            _tray.BalloonTipTitle = Strings.Main_Title;
             _tray.BalloonTipText = game is null ? Strings.Tray_GameClosed : Strings.Tray_GameDetected(game);
             _tray.ShowBalloonTip(4000);
         }
