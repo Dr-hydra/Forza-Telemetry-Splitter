@@ -1,6 +1,6 @@
 # Forza Telemetry Splitter
 
-[English](README.md) · [日本語](README.ja.md) · [Français](README.fr.md) · **Deutsch** · [Español](README.es.md)
+[English](README.md) · [日本語](README.ja.md) · [Français](README.fr.md) · **Deutsch** · [Español](README.es.md) · [简体中文](README.zh-Hans.md)
 
 Sende die Telemetrie von Forza an mehrere Tools gleichzeitig.
 

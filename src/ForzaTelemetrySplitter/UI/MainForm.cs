@@ -53,6 +53,7 @@ public sealed class MainForm : Form
     {
         AppLanguage.Auto, AppLanguage.English, AppLanguage.Japanese,
         AppLanguage.French, AppLanguage.German, AppLanguage.Spanish,
+        AppLanguage.SimplifiedChinese,
     };
 
     private readonly OverlayForm _overlay;
@@ -429,7 +430,7 @@ public sealed class MainForm : Form
         langLabel.SetBounds(x, y + 3, 340, 20);
         host.Controls.Add(langLabel);
         _language.DropDownStyle = ComboBoxStyle.DropDownList;
-        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español" });
+        _language.Items.AddRange(new object[] { Strings.Lang_Auto, "English", "日本語", "Français", "Deutsch", "Español", "简体中文" });
         _language.SelectedIndex = Array.IndexOf(_languageOrder, _config.Language) is var li && li >= 0 ? li : 0;
         _language.SetBounds(x + 350, y, 130, 24);
         _language.SelectedIndexChanged += OnLanguageChanged;

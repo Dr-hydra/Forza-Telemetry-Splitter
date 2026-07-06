@@ -9,7 +9,7 @@
 #define MyAppName "Forza Telemetry Splitter"
 #define MyAppShortName "ForzaTelemetrySplitter"
 #define MyAppPublisher "Jake Mismas"
-#define MyAppURL "https://github.com/jakemismas/Forza-Telemetry-Splitter"
+#define MyAppURL "https://github.com/Dr-hydra/Forza-Telemetry-Splitter"
 #define MyAppExeName "ForzaTelemetrySplitter.exe"
 
 ; Pull the version straight from the published exe so the installer never drifts.

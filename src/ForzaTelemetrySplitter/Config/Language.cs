@@ -13,6 +13,7 @@ public enum AppLanguage
     French,
     German,
     Spanish,
+    SimplifiedChinese,
 }
 
 public static class AppLanguageExtensions
@@ -30,6 +31,7 @@ public static class AppLanguageExtensions
             AppLanguage.French => "fr",
             AppLanguage.German => "de",
             AppLanguage.Spanish => "es",
+            AppLanguage.SimplifiedChinese => "zh-Hans",
             _ => ResolveOsLanguage(),
         };
         return CultureInfo.GetCultureInfo(code);
@@ -38,6 +40,9 @@ public static class AppLanguageExtensions
     /// <summary>The two-letter code of the OS UI language if supported, else "en".</summary>
     private static string ResolveOsLanguage()
     {
+        string name = CultureInfo.InstalledUICulture.Name.ToLowerInvariant();
+        if (name.StartsWith("zh", StringComparison.Ordinal)) return "zh-Hans";
+
         string two = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName.ToLowerInvariant();
         return two is "ja" or "fr" or "de" or "es" or "en" ? two : "en";
     }

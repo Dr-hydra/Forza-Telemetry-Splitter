@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ForzaTelemetrySplitter</RootNamespace>
     <AssemblyName>ForzaTelemetrySplitter</AssemblyName>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
@@ -22,7 +22,7 @@
     <!-- Bundle satellite resource assemblies (translations) INSIDE the single exe rather than
          leaving loose <culture>/*.resources.dll files next to it. -->
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-    <SatelliteResourceLanguages>en;ja;fr;de;es</SatelliteResourceLanguages>
+    <SatelliteResourceLanguages>en;ja;fr;de;es;zh-Hans</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <!-- Embed the logo so the tray icon and forms can load it at runtime from any single-file build. -->

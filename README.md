@@ -1,6 +1,6 @@
 # Forza Telemetry Splitter
 
-**English** · [日本語](README.ja.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md)
+**English** · [日本語](README.ja.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [简体中文](README.zh-Hans.md)
 
 Send Forza Horizon's telemetry to several tools at once.
 
@@ -158,7 +158,7 @@ on/off). Deleting it resets the app to defaults on next launch.
 Windows 10 and Windows 11. Forza Horizon 4/5/6 and Forza Motorsport (7, 2023) — auto-detected by
 packet format.
 
-The app interface is available in English, 日本語, Français, Deutsch, and Español, selected
+The app interface is available in English, 日本語, Français, Deutsch, Español, and 简体中文, selected
 automatically from your Windows language (changeable in the app).
 
 <!--

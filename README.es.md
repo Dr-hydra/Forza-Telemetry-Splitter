@@ -1,6 +1,6 @@
 # Forza Telemetry Splitter
 
-[English](README.md) · [日本語](README.ja.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · **Español**
+[English](README.md) · [日本語](README.ja.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · **Español** · [简体中文](README.zh-Hans.md)
 
 Envía la telemetría de Forza a varias herramientas a la vez.
 

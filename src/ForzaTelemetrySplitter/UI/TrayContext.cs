@@ -107,7 +107,7 @@ public sealed class TrayContext : ApplicationContext
     /// </summary>
     private void OnCheckForUpdates(object? sender, EventArgs e)
     {
-        const string releasesUrl = "https://github.com/jakemismas/Forza-Telemetry-Splitter/releases";
+        const string releasesUrl = "https://github.com/Dr-hydra/Forza-Telemetry-Splitter/releases";
         try
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo

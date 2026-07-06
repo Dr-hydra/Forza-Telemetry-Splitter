@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /></xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Tray_Open" xml:space="preserve"><value>打开</value></data>
+  <data name="Tray_StartSplitting" xml:space="preserve"><value>开始转发</value></data>
+  <data name="Tray_StopSplitting" xml:space="preserve"><value>停止转发</value></data>
+  <data name="Tray_ShowOverlay" xml:space="preserve"><value>显示叠加层</value></data>
+  <data name="Tray_SetupGuide" xml:space="preserve"><value>设置向导…</value></data>
+  <data name="Tray_CheckUpdates" xml:space="preserve"><value>检查更新…</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>退出</value></data>
+  <data name="Tray_GameDetected" xml:space="preserve"><value>已检测到 {0}。正在自动转发遥测数据。</value></data>
+  <data name="Tray_GameClosed" xml:space="preserve"><value>Forza 已关闭。回到空闲状态，但仍在监听。</value></data>
+
+  <data name="Main_Title" xml:space="preserve"><value>Forza 遥测分流器</value></data>
+  <data name="Main_Add" xml:space="preserve"><value>添加</value></data>
+  <data name="Main_Edit" xml:space="preserve"><value>编辑</value></data>
+  <data name="Main_Remove" xml:space="preserve"><value>移除</value></data>
+  <data name="Main_ListenInfo" xml:space="preserve"><value>正在监听 Forza 的 {0}:{1}  →  转发到：</value></data>
+  <data name="Col_On" xml:space="preserve"><value>启用</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>名称</value></data>
+  <data name="Col_Ip" xml:space="preserve"><value>IP</value></data>
+  <data name="Col_Port" xml:space="preserve"><value>端口</value></data>
+  <data name="Col_Forwarded" xml:space="preserve"><value>已转发</value></data>
+  <data name="Main_StartWithWindows" xml:space="preserve"><value>随 Windows 启动</value></data>
+  <data name="Main_Record" xml:space="preserve"><value>录制</value></data>
+  <data name="Main_StopRecording" xml:space="preserve"><value>停止录制</value></data>
+  <data name="Main_Recording" xml:space="preserve"><value>正在录制…</value></data>
+  <data name="Record_SaveTitle" xml:space="preserve"><value>保存遥测录制</value></data>
+  <data name="Record_Filter" xml:space="preserve"><value>Forza 遥测捕获 (*.fts)|*.fts</value></data>
+
+  <data name="Tab_Status" xml:space="preserve"><value>状态</value></data>
+  <data name="Tab_Activity" xml:space="preserve"><value>活动</value></data>
+  <data name="Tab_Overlay" xml:space="preserve"><value>叠加层</value></data>
+  <data name="Tab_Settings" xml:space="preserve"><value>设置</value></data>
+  <data name="Settings_StartupDesc" xml:space="preserve"><value>登录 Windows 后自动启动 Forza 遥测分流器。</value></data>
+  <data name="Settings_AutoSplit" xml:space="preserve"><value>检测到 Forza 游戏运行时自动开始转发</value></data>
+  <data name="Settings_AutoSplitDesc" xml:space="preserve"><value>检测 Forza Horizon 4、5、6 以及 Forza Motorsport；游戏启动后开始转发，游戏关闭后回到空闲状态。</value></data>
+  <data name="Settings_UnitDesc" xml:space="preserve"><value>叠加层和状态栏中速度读数使用的单位。</value></data>
+  <data name="Settings_LangDesc" xml:space="preserve"><value>应用的显示语言。</value></data>
+  <data name="Main_BackgroundNote" xml:space="preserve"><value>你可以关闭此窗口，工具会继续在后台运行。</value></data>
+
+  <data name="Log_Start" xml:space="preserve"><value>开始记录</value></data>
+  <data name="Log_Stop" xml:space="preserve"><value>停止记录</value></data>
+  <data name="Log_ChangeFolder" xml:space="preserve"><value>更改日志位置…</value></data>
+  <data name="Log_OpenFolder" xml:space="preserve"><value>打开日志文件夹</value></data>
+  <data name="Log_Recording" xml:space="preserve"><value>正在记录…</value></data>
+  <data name="Log_FolderLabel" xml:space="preserve"><value>日志：{0}</value></data>
+
+  <data name="Ov_Show" xml:space="preserve"><value>显示叠加层</value></data>
+  <data name="Ov_TransparentBg" xml:space="preserve"><value>透明背景</value></data>
+  <data name="Ov_TextColor" xml:space="preserve"><value>文字颜色…</value></data>
+  <data name="Ov_BgColor" xml:space="preserve"><value>背景颜色…</value></data>
+  <data name="Ov_Opacity" xml:space="preserve"><value>背景不透明度</value></data>
+  <data name="Ov_Move" xml:space="preserve"><value>移动叠加层</value></data>
+  <data name="Ov_DoneMoving" xml:space="preserve"><value>完成移动</value></data>
+  <data name="Ov_MoveHint" xml:space="preserve"><value>拖动叠加层到合适位置，然后点击“完成移动”。</value></data>
+
+  <data name="Chart_Title" xml:space="preserve"><value>数据包/秒 — 最近 {0} 分钟</value></data>
+  <data name="Chart_Unit" xml:space="preserve"><value>包/秒</value></data>
+  <data name="Chart_Empty" xml:space="preserve"><value>还没有流量。开始转发并启动 Forza 后，数据包流动时图表会自动填充。</value></data>
+  <data name="Chart_Waiting" xml:space="preserve"><value>正在等待 Forza…</value></data>
+  <data name="Zoom_In" xml:space="preserve"><value>放大</value></data>
+  <data name="Zoom_Out" xml:space="preserve"><value>缩小</value></data>
+
+  <data name="Col_Status" xml:space="preserve"><value>状态</value></data>
+  <data name="Dot_Forwarding" xml:space="preserve"><value>正在转发</value></data>
+  <data name="Dot_Idle" xml:space="preserve"><value>空闲</value></data>
+  <data name="Dot_Disabled" xml:space="preserve"><value>已禁用</value></data>
+  <data name="Dot_Error" xml:space="preserve"><value>错误</value></data>
+  <data name="Dot_Tooltip" xml:space="preserve"><value>正在将数据包转发到 {0}:{1}。UDP 是单向通信，因此无法确认接收应用是否已收到。</value></data>
+
+  <data name="Status_Stopped" xml:space="preserve"><value>已停止 — 未接收遥测数据</value></data>
+  <data name="Status_WaitingForForza" xml:space="preserve"><value>运行中 — 正在等待 Forza 发送遥测数据（将 Data Out 设置为 {0}:{1}）</value></data>
+  <data name="Status_GameDetectedWaiting" xml:space="preserve"><value>已检测到 {0} — 正在等待遥测数据（请在游戏的 HUD 设置中开启 Data Out）</value></data>
+  <data name="Status_Connected" xml:space="preserve"><value>正在接收 {0} — {1} 包/秒 — 比赛 {2} — {3}</value></data>
+  <data name="Status_RaceOn" xml:space="preserve"><value>开启</value></data>
+  <data name="Status_RaceOff" xml:space="preserve"><value>关闭</value></data>
+  <data name="Readout_Gear" xml:space="preserve"><value>挡位 {0}   {1}</value></data>
+
+  <data name="Overlay_Connected" xml:space="preserve"><value>已连接</value></data>
+  <data name="Overlay_NoData" xml:space="preserve"><value>无数据</value></data>
+
+  <data name="Remove_Confirm" xml:space="preserve"><value>要移除“{0}”吗？</value></data>
+  <data name="Remove_Title" xml:space="preserve"><value>移除目标</value></data>
+
+  <data name="Dest_AddTitle" xml:space="preserve"><value>添加目标</value></data>
+  <data name="Dest_EditTitle" xml:space="preserve"><value>编辑目标</value></data>
+  <data name="Dest_Preset" xml:space="preserve"><value>预设：</value></data>
+  <data name="Dest_Name" xml:space="preserve"><value>名称：</value></data>
+  <data name="Dest_Ip" xml:space="preserve"><value>IP 地址：</value></data>
+  <data name="Dest_PortLabel" xml:space="preserve"><value>端口：</value></data>
+  <data name="Dest_Enabled" xml:space="preserve"><value>启用</value></data>
+  <data name="Dest_Ok" xml:space="preserve"><value>确定</value></data>
+  <data name="Dest_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="Dest_MissingName" xml:space="preserve"><value>请输入名称。</value></data>
+  <data name="Dest_InvalidIp" xml:space="preserve"><value>这个 IP 地址无效。本机工具请使用 127.0.0.1；手机或平板仪表盘请使用对应设备的 IP（例如 192.168.x.x）。</value></data>
+
+  <data name="Welcome_Title" xml:space="preserve"><value>欢迎使用 Forza 遥测分流器</value></data>
+  <data name="Welcome_Intro" xml:space="preserve"><value>此应用可以把 Forza 的遥测数据同时发送给多个工具。只需要完成一件事：把 Forza 的 Data Out 指向分流器。</value></data>
+  <data name="Welcome_StepHeading" xml:space="preserve"><value>在你的 Forza 游戏中（Horizon 或 Motorsport）：</value></data>
+  <data name="Welcome_Path" xml:space="preserve"><value>设置  &gt;  HUD 和游戏玩法  &gt;  Data Out</value></data>
+  <data name="Welcome_Note" xml:space="preserve"><value>游戏会被自动检测。其他工具保持原样即可 — 分流器会转发到每个工具的常用端口（VirtualTCU 仍保持 5555）。</value></data>
+  <data name="Welcome_DontShow" xml:space="preserve"><value>不再显示</value></data>
+  <data name="Welcome_OpenGuide" xml:space="preserve"><value>打开完整设置指南</value></data>
+  <data name="Welcome_GetStarted" xml:space="preserve"><value>开始使用</value></data>
+
+  <data name="Lang_Label" xml:space="preserve"><value>语言：</value></data>
+  <data name="Lang_Auto" xml:space="preserve"><value>自动</value></data>
+  <data name="Lang_RestartNote" xml:space="preserve"><value>请重启应用以完整应用新的语言。</value></data>
+
+  <data name="Error_PortInUse" xml:space="preserve"><value>端口 {0} 已被其他应用占用。
+
+Forza 遥测分流器需要一个独立的空闲端口来接收 Forza 数据。另一个工具（或分流器的第二个实例）正在占用此端口。
+
+处理方法：打开分流器，把监听端口改成空闲端口，然后把 Forza 的 Data Out 端口设置为相同的值。默认端口 {0} 通常是空闲的。</value></data>
+
+  <data name="Settings_Companions" xml:space="preserve"><value>伴随应用</value></data>
+  <data name="Settings_CompanionsDesc" xml:space="preserve"><value>分流器启动时一并启动的工具（手动或自动启动均适用）。每个已启用的应用会在尚未运行时启动。分流器只负责启动它们，不会关闭它们。</value></data>
+  <data name="Comp_AddTitle" xml:space="preserve"><value>添加伴随应用</value></data>
+  <data name="Comp_EditTitle" xml:space="preserve"><value>编辑伴随应用</value></data>
+  <data name="Comp_Name" xml:space="preserve"><value>名称：</value></data>
+  <data name="Comp_Path" xml:space="preserve"><value>程序：</value></data>
+  <data name="Comp_Browse" xml:space="preserve"><value>浏览...</value></data>
+  <data name="Comp_Arguments" xml:space="preserve"><value>参数：</value></data>
+  <data name="Comp_Enabled" xml:space="preserve"><value>启用</value></data>
+  <data name="Comp_BatNote" xml:space="preserve"><value>批处理文件无法检查重复运行，可能会在分流器每次启动时再次启动。</value></data>
+  <data name="Comp_MissingName" xml:space="preserve"><value>请输入名称。</value></data>
+  <data name="Comp_MissingPath" xml:space="preserve"><value>请选择要启动的程序（.exe 或 .bat）。</value></data>
+  <data name="Comp_FileFilter" xml:space="preserve"><value>程序和脚本 (*.exe;*.bat)|*.exe;*.bat|所有文件 (*.*)|*.*</value></data>
+  <data name="Comp_RemoveTitle" xml:space="preserve"><value>移除伴随应用</value></data>
+  <data name="Col_Path" xml:space="preserve"><value>程序</value></data>
+  <data name="Col_Args" xml:space="preserve"><value>参数</value></data>
+  <data name="Error_CompanionLaunch" xml:space="preserve"><value>无法启动伴随应用“{0}”。
+
+{1}
+
+请检查“设置 &gt; 伴随应用”中的路径。分流器和其他工具不会受到影响。</value></data>
+</root>

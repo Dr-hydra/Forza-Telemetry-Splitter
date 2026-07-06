@@ -40,11 +40,12 @@ Check("ja", mustDifferFromEnglish: true);
 Check("fr", mustDifferFromEnglish: true);
 Check("de", mustDifferFromEnglish: true);
 Check("es", mustDifferFromEnglish: true);
+Check("zh-Hans", mustDifferFromEnglish: true);
 
 Console.WriteLine("\n[Test 1b] New v0.6 strings load and differ per culture");
 {
     bool ok = true;
-    foreach (var c in new[] { "ja", "fr", "de", "es" })
+    foreach (var c in new[] { "ja", "fr", "de", "es", "zh-Hans" })
     {
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(c);
         string fwd = Strings.Dot_Forwarding;
@@ -83,6 +84,12 @@ Console.WriteLine("\n[Test 3] Placeholder formatting works per culture");
     bool eok = e.Contains("44405") && !e.Contains("{0}");
     Console.WriteLine($"  de Error_PortInUse contains port, no stray token -> {(eok ? "PASS" : "FAIL")}");
     if (!eok) failures++;
+
+    CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("zh-Hans");
+    string z = Strings.Status_WaitingForForza("127.0.0.1", 44405);
+    bool zok = z.Contains("127.0.0.1") && z.Contains("44405") && !z.Contains("{0}") && !z.Contains("{1}");
+    Console.WriteLine($"  zh-Hans Status_WaitingForForza contains endpoint, no stray token -> {(zok ? "PASS" : "FAIL")}");
+    if (!zok) failures++;
 }
 
 Console.WriteLine("\n[Test 4] StartupRegistration enable/disable (HKCU Run)");
